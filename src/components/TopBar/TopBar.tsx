@@ -62,8 +62,8 @@ const TopBar = () => {
 
     return (
         <div className="flex w-full justify-between p-4 bg-white shadow-md top-0 left-0 right-0 h-15 z-50">
-            <div className="flex items-center">
-                <label htmlFor="song-select" className="font-medium max-w-14 text-ellipsis">{selectedFile?.name || 'Select a song'}</label>
+            <div className="flex items-center max-w-32 text-ellipsis overflow-hidden">
+                <label htmlFor="song-select" className="font-medium">{selectedFile?.name || 'Select a song'}</label>
                 <input onChange={onSongSelected} accept="audio/*" id="song-select" type="file" name="song" className="hidden" />
             </div>
             <div>
