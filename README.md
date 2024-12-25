@@ -1,5 +1,3 @@
-Here’s a professional-looking README for your initial release of the **LRC Generator** project:
-
 ---
 
 # LRC Generator
@@ -21,7 +19,7 @@ Here’s a professional-looking README for your initial release of the **LRC Gen
 
 ## Preview
 
-![Screenshot of LRC Generator](image.png)
+![Screenshot of LRC Generator](/screenshot/image.png)
 
 ## Getting Started
 
