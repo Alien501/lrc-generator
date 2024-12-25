@@ -5,7 +5,7 @@ import { useMusicStore } from "../../store/useMusicStore";
 interface LyricsCardProps {
     lyrics: string;
     id: number;
-    timestamp?: number;
+    timestamp: number;
     isSynced?: boolean;
 }
 

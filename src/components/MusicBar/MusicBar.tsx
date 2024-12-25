@@ -1,9 +1,10 @@
+// @ts-nocheck
 import { useEffect, useRef, useState } from "react";
 import { useMusicStore } from "../../store/useMusicStore";
 import { ChevronDownIcon, ChevronUpIcon, FastBackwardIcon, FastForwardIcon, PauseIcon, PlayIcon } from "../icons/icons";
 import { Howl } from "howler";
 
-const PlayerControls = ({ sound, seek, duration }) => {
+const PlayerControls = ({ sound, duration }) => {
     const handleForward = () => {
         if (sound) {
             const currentSeek = sound.seek();

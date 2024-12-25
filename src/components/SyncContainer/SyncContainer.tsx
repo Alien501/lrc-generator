@@ -59,6 +59,7 @@ const SyncContainer = () => {
                 key={0}
                 lyrics=""
                 id={0}
+                timestamp={0}
             />
             {lyrics.map((lyric, i) => (
                 <LyricsCard
