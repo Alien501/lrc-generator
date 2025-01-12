@@ -6,6 +6,7 @@ import WordByWord from './components/WordByWord/WordByWord'
 import Menu from './pages/Menu'
 import Modal from './components/modal/modal'
 import { useModalStore } from './store/useModalStore'
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const { state } = useModalStore();
@@ -49,6 +50,8 @@ function App() {
         state &&
         <Modal />
       }
+
+      <Analytics />
     </>
   )
 }
