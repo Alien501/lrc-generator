@@ -14,7 +14,7 @@ const AboutCard = () => {
                 <a href="https://github.com/Alien501" target="_" className="h-8 w-8 bg-gray-400/60 text-gray-800/70 hover:bg-gray-950 hover:text-gray-50 transition-all duration-300 rounded-md flex items-center justify-center">
                     <GithubIcon />
                 </a>
-                <a href="mailto:cvignesh404@gmail.com" target="_" className="h-8 w-8 bg-gray-400/60 text-gray-800/70 hover:bg-gray-950 hover:text-gray-50 transition-all duration-300 rounded-md flex items-center justify-center">
+                <a href="mailto:cvignesh404@gmail.com" className="h-8 w-8 bg-gray-400/60 text-gray-800/70 hover:bg-gray-950 hover:text-gray-50 transition-all duration-300 rounded-md flex items-center justify-center">
                     <MailIcon />
                 </a>
                 <a href="https://t.me/Alien_501" target="_" className="h-8 w-8 bg-gray-400/60 text-gray-800/70 hover:bg-gray-950 hover:text-gray-50 transition-all duration-300 rounded-md flex items-center justify-center">
@@ -25,8 +25,8 @@ const AboutCard = () => {
                 </a>
             </div>
             <div className="h-max flex items-center justify-center flex-col space-y-2">
-                <a target="_" href="https://github.com/Alien501/lrc-generator" className="bg-black hover:bg-gray-600 transition-all duration-300 text-white text-sm font-semibold pr-3 pl-3 pt-2 pb-2 rounded-md">Source Code</a>
-                <p className="text-sm">Design inspired from <i><a href="https://www.musixmatch.com/" className="font-semibold hover:underline" target="">Musixmatch</a></i></p>
+                <a target="_" href="https://github.com/Alien501/lrc-generator" className="bg-black hover:bg-black/90 transition-all duration-300 text-white text-sm font-semibold pr-3 pl-3 pt-2 pb-2 rounded-md">Source Code</a>
+                <p className="text-sm">Design inspired from <i><a href="https://www.musixmatch.com/" className="font-semibold hover:underline" target="_">Musixmatch</a></i></p>
             </div>
         </div>
     )

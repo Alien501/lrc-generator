@@ -1,15 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { useLyricsStore } from "../../store/useLyricsStore";
 import { useMusicStore } from "../../store/useMusicStore";
-import { useNavStore } from "../../store/useNavStore";
 import { BackIcon, InfoIcon } from "../icons/icons";
 import { useModalStore } from "../../store/useModalStore";
 import AboutCard from "../AboutCard/AboutCard";
+import SaveCard from "../SaveCard/SaveCard";
+import { useLyricsStore } from "../../store/useLyricsStore";
 
 const TopBar = () => {
-    const {selectedFile, setSelectedFile, setAudioUrl, resetMusic} = useMusicStore();
-    const {syncedLyrics, resetLyrics} = useLyricsStore();
-    const {resetNav} = useNavStore();
+    const { selectedFile, setSelectedFile, setAudioUrl } = useMusicStore();
+    const { syncedLyrics, resetLyrics } = useLyricsStore();
     const navigate = useNavigate();
     const { changeState, setChildren, setTitle } = useModalStore();
 
@@ -24,46 +23,10 @@ const TopBar = () => {
         setAudioUrl(audioUrl);
     }
 
-    const formatTimestamp = (timestamp: number) => {
-        const min = Math.floor(timestamp / 60);
-        const sec = Math.floor(timestamp % 60);
-        const msec = Math.floor((timestamp % 1) * 100);
-
-        return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}.${msec.toString().padStart(2, '0')}`
-    }
-
-    const formatLyricsToLrc = () => {
-        const sortedLyrics = [...syncedLyrics].sort((a, b) => a.timestamp - b.timestamp);
-        const metadata = [
-            '[ar:Artist]',
-            '[al:Album]',
-            '[ti:Title]',
-            '[by:Generated with LRC Generator]',
-            '[re:LRC Generator - Alien501]',
-            ''
-        ];
-    
-        const formattedLyrics = sortedLyrics
-            .filter(lyric => lyric.isSynced && lyric.lyrics.trim() !== '')
-            .map(lyric => `[${formatTimestamp(lyric.timestamp)}]${lyric.lyrics}`);
-        return [...metadata, ...formattedLyrics].join('\n');
-    }
-
     const onSaveButtonClicked = () => {
-        const lrcContent = formatLyricsToLrc();
-        const blob = new Blob([lrcContent], {type: 'text/plain;charset=utf-8'});
-        const url = URL.createObjectURL(blob);
-
-        const downloadLink = document.createElement('a');
-        downloadLink.href = url;
-        downloadLink.download = selectedFile?.name.split('.')[1] + '.lrc';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        setTimeout(() => {
-            resetLyrics();
-            resetMusic();
-            resetNav();
-        }, 3000)
+        setTitle('Save File');
+        setChildren(<SaveCard />);
+        changeState();
     }
 
     return (
@@ -76,7 +39,7 @@ const TopBar = () => {
                             <BackIcon />
                         </button>
                         :
-                        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center">
+                        <button onClick={() => {resetLyrics();navigate(-1)}} className="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center">
                             <BackIcon />
                         </button>
                     }
@@ -85,9 +48,17 @@ const TopBar = () => {
                 <input onChange={onSongSelected} accept="audio/*" id="song-select" type="file" name="song" className="hidden" />
             </div>
             <div className="space-x-2 flex items-center">
-                <button onClick={onSaveButtonClicked} className="h-max pl-4 pr-4 pt-2 pb-2 rounded-full bg-black text-white">
-                    Save
-                </button>
+                {/* Dono why disabled class is working, so just hardcoded the color */}
+                {
+                    syncedLyrics.length === 0?
+                    <button disabled className="bg-gray-500 h-max pl-4 pr-4 pt-1 pb-1 rounded-full  text-white hover:cursor-not-allowed">
+                        Save
+                    </button>
+                    :
+                    <button onClick={onSaveButtonClicked} className="h-max pl-4 pr-4 pt-1 pb-1 rounded-full bg-black text-white">
+                        Save
+                    </button>
+                }
                 <button onClick={() => {setTitle('About');setChildren(<AboutCard />);changeState()}} className="w-10 h-10 bg-slate-200/0 rounded-full flex items-center justify-center hover:bg-slate-100">
                     <InfoIcon />
                 </button>
