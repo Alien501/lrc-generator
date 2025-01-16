@@ -10,10 +10,23 @@ interface FormData {
     album: string
     lyricist: string
     by: string
+    length: string
+}
+
+interface WordTiming {
+    word: string
+    timestamp: number
+}
+
+interface SyncedLine {
+    lineTimestamp: number
+    words: WordTiming[]
+    lyrics: string
+    isSynced: boolean
 }
 
 const SaveCard = () => {
-    const { syncedLyrics, resetLyrics } = useLyricsStore();
+    const { syncedLyrics, resetLyrics, wordByWordLyrics } = useLyricsStore();
     const { selectedFile, resetMusic } = useMusicStore();
     const { resetNav } = useNavStore();
     const { changeState } = useModalStore();
@@ -24,6 +37,7 @@ const SaveCard = () => {
         album: "",
         lyricist: "",
         by: "",
+        length: ""
     })
 
     const formatTimestamp = (timestamp: number) => {
@@ -35,19 +49,28 @@ const SaveCard = () => {
     }
 
     const formatLyricsToLrc = () => {
-        const sortedLyrics = [...syncedLyrics].sort((a, b) => a.timestamp - b.timestamp);
         const metadata = [
+            `[ti:${formData.title || 'Title'}]`,
             `[ar:${formData.artist || 'Artist'}]`,
             `[al:${formData.album || 'Album'}]`,
-            `[ti:${formData.title || 'Title'}]`,
+            `[lr:${formData.lyricist || 'Unknown'}]`,
+            `[length:${formData.length || '00:00'}]`,
             `[by:${formData.by || 'Generated with LRC Generator'}]`,
-            '[re:LRC Generator - Alien501]',
+            '[re:LRC Generator - Word-by-Word Sync]',
             ''
         ];
 
-        const formattedLyrics = sortedLyrics
-            .filter(lyric => lyric.isSynced && lyric.lyrics.trim() !== '')
-            .map(lyric => `[${formatTimestamp(lyric.timestamp)}]${lyric.lyrics}`);
+        const formattedLyrics = syncedLyrics
+            .filter(line => line.isSynced && line.lyrics.trim() !== '')
+            .map(line => {
+                // Assuming line.wordTimings exists in your data structure
+                const wordTimings = (line as SyncedLine).words?.map(timing => 
+                    `<${formatTimestamp(timing.timestamp)}>${timing.word}`
+                ).join(' ') || line.lyrics;
+
+                return `[${formatTimestamp(line.timestamp)}] ${wordTimings}`;
+            });
+
         return [...metadata, ...formattedLyrics].join('\n');
     }
 
@@ -61,23 +84,24 @@ const SaveCard = () => {
         const lrcContent = formatLyricsToLrc();
         const blob = new Blob([lrcContent], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-
-        const downloadLink = document.createElement('a');
-        downloadLink.href = url;
-        downloadLink.download = `${selectedFile?.name.split('.')[0]}.lrc`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        URL.revokeObjectURL(url);
+        console.log(url);
+        console.log(wordByWordLyrics)
+        // const downloadLink = document.createElement('a');
+        // downloadLink.href = url;
+        // downloadLink.download = `${selectedFile?.name.split('.')[0]}.lrc`;
+        // document.body.appendChild(downloadLink);
+        // downloadLink.click();
+        // document.body.removeChild(downloadLink);
+        // // URL.revokeObjectURL(url);
 
         setTimeout(() => {
-            resetLyrics();
-            resetMusic();
-            resetNav();
-            changeState();
+            // resetLyrics();
+            // resetMusic();
+            // resetNav();
+            // changeState();
         }, 1000);
     }
-    
+
     return (
         <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="px-6 py-4">
@@ -138,6 +162,21 @@ const SaveCard = () => {
                             type="text"
                             placeholder="Enter lyricist name"
                             value={formData.lyricist}
+                            onChange={handleChange}
+                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+                focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="length" className="block text-sm font-medium text-gray-700">
+                            Length
+                        </label>
+                        <input
+                            id="length"
+                            name="length"
+                            type="text"
+                            placeholder="Enter song length (e.g., 3:45)"
+                            value={formData.length}
                             onChange={handleChange}
                             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
                 focus:outline-none focus:border-black focus:ring-1 focus:ring-black"

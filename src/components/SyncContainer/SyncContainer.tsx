@@ -18,7 +18,7 @@ const SyncControls = () => {
 
     const handleDownClick = () => {
         if(currentlyActiveCard + 1 > lyricsLength) {
-            console.log("End");
+            // console.log("End");
         }else{
             setCurrentlyActiveCard(currentlyActiveCard + 1);
         }
