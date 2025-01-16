@@ -3,8 +3,8 @@ import { useLyricsStore } from "../../store/useLyricsStore";
 import { useMusicStore } from "../../store/useMusicStore";
 
 const WordByWordSync = () => {
-    const { syncedLyrics, updateLyricTimestamp, currentlyActiveCard, setCurrentlyActiveCard } = useLyricsStore();
-    const controlsState = useMusicStore((state) => state.controlsState);
+    const { syncedLyrics, updateLyricTimestamp, currentlyActiveCard, setCurrentlyActiveCard, updateWordByWordLyrics } = useLyricsStore();
+    const { controlsState, currentTimestamp } = useMusicStore();
     const [words, setWords] = useState<string[]>([]);
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
@@ -61,7 +61,10 @@ const WordByWordSync = () => {
         sliderRef.current.style.left = `${newLeft}px`;
         const progress = newLeft / (containerWidth - sliderWidth);
         const newWordIndex = Math.floor(progress * (words.length - 1));
-        setCurrentWordIndex(Math.max(0, Math.min(newWordIndex, words.length - 1)));
+        const currentWordIndex = Math.max(0, Math.min(newWordIndex, words.length - 1))
+        updateWordByWordLyrics(currentlyActiveCard, currentWordIndex, currentTimestamp);
+        console.log("Current Time Stamp: ", currentTimestamp)
+        setCurrentWordIndex(currentWordIndex);
     };
 
     return (
@@ -102,7 +105,7 @@ const WordByWordSync = () => {
                 ref={containerRef}
                 className={`fixed h-12 bg-black/10 rounded-full mx-auto mb-4 transition-all ${
                     controlsState ? 'bottom-[130px]' : 'bottom-[82px]'
-                } overflow-hidden z-50`}
+                } overflow-hidden z-40`}
                 style={{
                     left: '50%',
                     transform: 'translateX(-50%)',

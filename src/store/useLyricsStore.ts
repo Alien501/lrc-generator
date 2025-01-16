@@ -57,8 +57,9 @@ export const useLyricsStore = create<LyricsState>((set) => ({
                     ? {
                           ...line,
                           lyrics: line.lyrics.map((word, idx) =>
-                              idx === wordId ? { ...word, timestamp, isSynced: true } : word
+                              idx === wordId && !word.isSynced ? { ...word, timestamp, isSynced: true } : word
                           ),
+                          timestamp: wordId == 0 ? timestamp: line.timestamp
                       }
                     : line
             ),
