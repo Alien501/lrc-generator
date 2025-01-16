@@ -33,6 +33,7 @@ export const useLyricsStore = create<LyricsState>((set) => ({
     setStaticLyrics: (lyrics) =>
         set(() => {
             const lines = lyrics.split("\n").map((line) => line.trim());
+            lines.push('');
             return {
                 staticLyrics: lyrics,
                 syncedLyrics: lines.map((line) => ({
