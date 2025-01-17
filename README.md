@@ -1,6 +1,3 @@
-
----
-
 # LRC Generator
 
 **LRC Generator** is a user-friendly web application that allows users to paste lyrics, synchronize them with audio playback, and download the synchronized lyrics as an `.lrc` file. This project is built with **React**, featuring a modern UI styled using **Tailwind CSS**, state management powered by **Zustand**, and audio handling implemented with **Howler.js**.
@@ -73,7 +70,3 @@ If you encounter any issues or have suggestions for improvement, please open an 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
----
-
-This README reflects your project's current state and outlines plans for future improvements. Let me know if you'd like to tweak any section!
