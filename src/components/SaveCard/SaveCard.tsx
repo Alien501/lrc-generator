@@ -62,8 +62,7 @@ const SaveCard = () => {
     const formatWordByWordLyrics = () => {
         return wordByWordLyrics.map((line, lineIndex) => {
             if (!line.lyrics || line.lyrics.length === 0) return '';
-            console.log(wordByWordLyrics[lineIndex].timestamp)
-            const lineStart = formatTimestamp(wordByWordLyrics[lineIndex].timestamp);
+            const lineStart = formatTimestamp(wordByWordLyrics[lineIndex].lyrics[0].timestamp);
             let wordTimings = '';
 
             line.lyrics.forEach((wordTiming, index) => {
@@ -73,8 +72,8 @@ const SaveCard = () => {
                     wordTimings += `${wordTiming.lyrics}${index < line.lyrics.length - 1 ? ' ' : ''}`;
                 }
             });
-
-            return `[${lineStart}]${wordTimings}`;
+            console.log("Timestamp", syncedLyrics[lineIndex].timestamp)
+            return `[${lineStart}]${wordTimings} <${formatTimestamp(syncedLyrics[lineIndex].timestamp + .500)}>`;
         }).filter(line => line !== '');
     }
 

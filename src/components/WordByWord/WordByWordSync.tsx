@@ -31,8 +31,7 @@ const WordByWordSync = () => {
         setIsDragging(false);
 
         if (currentWordIndex === words.length - 1) {
-            const timestamp = Date.now();
-            updateLyricTimestamp(currentlyActiveCard, timestamp);
+            updateLyricTimestamp(currentlyActiveCard, currentTimestamp);
             if (currentlyActiveCard < syncedLyrics.length - 1) {
                 setCurrentlyActiveCard(currentlyActiveCard + 1);
             }

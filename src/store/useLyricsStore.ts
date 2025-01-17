@@ -8,7 +8,7 @@ interface SyncedLyrics {
 
 interface WordByWordLyrics {
     lyrics: SyncedLyrics[];
-    timestamp: number;
+    timestamp: number; // end timestamp
 }
 
 interface LyricsState {
