@@ -1,0 +1,21 @@
+{
+  "name": "LRC Generator - Free Lyrics Synchronization Tool",
+  "short_name": "LRC Generator",
+  "description": "Create synchronized lyrics files (.lrc) for your music. Paste lyrics, sync with audio playback, and download professional LRC files.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "multimedia", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}

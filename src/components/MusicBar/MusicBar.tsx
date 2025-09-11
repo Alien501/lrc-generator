@@ -123,7 +123,7 @@ export default function MusicBar() {
     };
 
     return (
-        <div className="fixed bottom-0 w-full border">
+        <div className="fixed bottom-0 w-full border-t border-t-black/10">
             {controlsState && <PlayerControls sound={sound} seek={seek} duration={duration} />}
             <div className="bg-white w-full h-20 grid grid-cols-[10%_80%_10%] place-content-center place-items-center shadow-sm">
                 <div className="flex items-center justify-center">

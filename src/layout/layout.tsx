@@ -7,13 +7,19 @@ import MusicBar from "../components/MusicBar/MusicBar";
 const DefaultLayout = () => {
     return(
         <>
-            <main className='font-satoshi bg-gray-300/4=0 min-h-screen'>
-                <TopBar />
-                <Navbar />
-                <TabContainer>
-                    <Outlet />
-                </TabContainer>
-                <MusicBar />
+            <main className='font-display bg-gray-300/40 min-h-screen'>
+                <header>
+                    <TopBar />
+                    <Navbar />
+                </header>
+                <section>
+                    <TabContainer>
+                        <Outlet />
+                    </TabContainer>
+                </section>
+                <footer>
+                    <MusicBar />
+                </footer>
             </main>
         </>
     )

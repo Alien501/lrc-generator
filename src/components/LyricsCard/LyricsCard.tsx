@@ -39,9 +39,11 @@ const LyricsCard = ({ lyrics, id, timestamp, isSynced }: LyricsCardProps) => {
             ref={cardRef}
             id={`l-${id}`}
             className={`
-                bg-white 
+                hover:bg-neutral-50
+                border-black/5
                 items-center 
-                ${isActive ? 'ring-2 ring-blue-400 bg-blue-400/20' : ''} 
+                ${isActive ? 'ring-2 ring-blue-400' : ''} 
+                ${isSynced && 'bg-neutral-100 border border-neutral-400/10'}
                 min-h-[50px] 
                 rounded-md 
                 m-2 

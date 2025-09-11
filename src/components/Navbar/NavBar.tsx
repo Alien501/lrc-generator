@@ -36,7 +36,7 @@ const Navbar = () => {
   const tabs: TabType[] = ['lyrics', 'sync'];
 
   return (
-    <div className="h-max p-1 bg-white/80 backdrop-blur-sm w-full z-40 shadow-sm border  flex items-center justify-center">
+    <div className="h-max p-1 bg-white/80 backdrop-blur-sm w-full z-40 border-b-1 border-b-black/10 flex items-center justify-center">
       <div className="w-max flex justify-between items-center rounded-full bg-gray-300/30 p-1 gap-2">
         {tabs.map((tab) => (
           <TabButton

@@ -5,6 +5,7 @@ import { useModalStore } from "../../store/useModalStore";
 import AboutCard from "../AboutCard/AboutCard";
 import SaveCard from "../SaveCard/SaveCard";
 import { useLyricsStore } from "../../store/useLyricsStore";
+import { Button } from "../ui/button";
 
 const TopBar = () => {
     const { selectedFile, setSelectedFile, setAudioUrl } = useMusicStore();
@@ -30,21 +31,21 @@ const TopBar = () => {
     }
 
     return (
-        <div className="flex w-full justify-between p-4 bg-white shadow-md top-0 left-0 right-0 h-15 z-50">
-            <div className="flex items-center space-x-1 max-w-36 text-ellipsis overflow-hidden">
+        <div className="flex font-display w-full justify-between p-2 bg-white shadow-md top-0 left-0 right-0 h-16 z-50 border-b border-b-black/10">
+            <div className="flex items-center space-x-1 max-w-[50%] text-ellipsis overflow-hidden h-full">
                 <div>
                     {
                         window.location.pathname == '/' || window.location.pathname == '/menu'?
-                        <button disabled className="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center disabled:text-gray-500 disabled:cursor-not-allowed">
+                        <Button disabled className="w-10 h-10 rounded-full hover:bg-slate-200 flex items-center justify-center disabled:text-gray-500 disabled:cursor-not-allowed">
                             <BackIcon />
-                        </button>
+                        </Button>
                         :
-                        <button onClick={() => {resetLyrics();navigate(-1)}} className="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center">
+                        <Button onClick={() => {resetLyrics();navigate(-1)}} className="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center">
                             <BackIcon />
-                        </button>
+                        </Button>
                     }
                 </div>
-                <label htmlFor="song-select" className="font-medium">{selectedFile?.name || 'Select a song'}</label>
+                <label htmlFor="song-select" className="font-medium text-nowrap text-ellipsis inline-block w-36 overflow-hidden">{selectedFile?.name || 'Select a song'}</label>
                 <input onChange={onSongSelected} accept="audio/*" id="song-select" type="file" name="song" className="hidden" />
             </div>
             <div className="space-x-2 flex items-center">

@@ -33,13 +33,13 @@ function App() {
         },
         {
           path: '/*',
-          element: <div className='h-full w-full flex flex-col space-y-2 justify-center items-center'><p>Someone misguided you here!</p><button onClick={() => window.location.pathname = '/'}>Go Back 👀</button></div>
+          element: <div className='h-full w-full flex flex-col space-y-2 justify-center items-center'><h1 className='text-2xl font-bold'>Page Not Found</h1><p>Someone misguided you here!</p><button onClick={() => window.location.pathname = '/'} className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'>Go Back Home 👀</button></div>
         },
       ]
     },
     {
       path: '/*',
-      element: <div className='h-full w-full flex flex-col space-y-2 justify-center items-center'><p>Someone misguided you here!</p><button onClick={() => window.location.pathname = '/'}>Go Back 👀</button></div>
+      element: <div className='h-full w-full flex flex-col space-y-2 justify-center items-center'><h1 className='text-2xl font-bold'>Page Not Found</h1><p>Someone misguided you here!</p><button onClick={() => window.location.pathname = '/'} className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'>Go Back Home 👀</button></div>
     },
   ])
   return (
