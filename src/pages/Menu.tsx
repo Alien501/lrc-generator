@@ -10,7 +10,7 @@ const Menu = () => {
         title: "LRC Generator - Choose Sync Mode | Free Lyrics Synchronization Tool",
         description: "Choose between line-by-line or word-by-word synchronization modes for creating perfect LRC files. Start your lyrics synchronization journey with our free online tool.",
         keywords: "LRC generator, lyrics sync mode, line by line sync, word by word sync, karaoke lyrics, music synchronization",
-        url: "https://lrc-generator.vercel.app/menu"
+        url: "https://lrc-gen.alien501.in//menu"
     });
 
 

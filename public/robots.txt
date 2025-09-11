@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://lrc-generator.vercel.app/sitemap.xml
+Sitemap: https://lrc-gen.alien501.in//sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1

@@ -10,7 +10,7 @@ const LineByLine = () => {
         title: "Line-by-Line Lyrics Sync | LRC Generator - Professional Lyrics Synchronization",
         description: "Synchronize your lyrics line by line with audio playback. Create professional LRC files with precise timing for each line. Perfect for karaoke and music players.",
         keywords: "line by line lyrics sync, LRC file creation, lyrics synchronization, karaoke lyrics, music player lyrics, line sync tool",
-        url: "https://lrc-generator.vercel.app/line"
+        url: "https://lrc-gen.alien501.in//line"
     });
 
     return (
