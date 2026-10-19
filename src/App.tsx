@@ -7,17 +7,22 @@ import Menu from './pages/Menu'
 import Modal from './components/modal/modal'
 import { useModalStore } from './store/useModalStore'
 import { Analytics } from "@vercel/analytics/react"
+import { MainPage } from './pages/Main'
 
 function App() {
   const { state } = useModalStore();
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <DefaultLayout />,
+      // element: <DefaultLayout />,
       children: [
+        // {
+        //   path: '/',
+        //   element: <Menu />,
+        // },
         {
           path: '/',
-          element: <Menu />,
+          element: <MainPage />,
         },
         {
           path: '/menu',
