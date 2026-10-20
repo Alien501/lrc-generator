@@ -24,6 +24,10 @@ export class Song extends Model<SongState> {
         super(initialState);
     }
 
+    searchForLyricsOnline() {
+        window.open(`https://google.com/search?q=${this.baseName} Song Lyrics`)
+    }
+
     get name() {
         return this.state.file?.name.trim() ?? "";
     }

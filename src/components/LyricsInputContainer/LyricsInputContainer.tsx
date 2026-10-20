@@ -29,7 +29,7 @@ const LyricsInputContainer = () => {
                 value={text}
                 id="lyrics"
                 placeholder="Paste your lyrics here..."
-                className="block rounded-md p-2 w-full min-h-[100px] resize-none overflow-hidden border-none focus:outline-none focus:ring-0"
+                className="block rounded-md p-2 w-full min-h-25 resize-none overflow-hidden border-none focus:outline-none focus:ring-0"
             />
         </div>
     );

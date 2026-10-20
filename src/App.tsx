@@ -6,6 +6,7 @@ import Menu from './pages/Menu'
 import Modal from './components/modal/modal'
 import { Analytics } from "@vercel/analytics/react"
 import { MainPage } from './pages/Main'
+import { Toaster } from 'sonner'
 
 const NotFound = () => (
   <div className='h-full w-full flex flex-col space-y-2 justify-center items-center'>
@@ -28,6 +29,7 @@ function App() {
     <>
       <RouterProvider router={router} />
       <Modal />
+      <Toaster />
       <Analytics />
     </>
   )
