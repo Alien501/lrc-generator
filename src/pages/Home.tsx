@@ -4,10 +4,10 @@ import Navbar from "../components/Navbar/NavBar";
 import SyncContainer from "../components/SyncContainer/SyncContainer";
 import TabContainer from "../components/TabContainer/TabContainer";
 import TopBar from "../components/TopBar/TopBar";
-import { useNavStore } from "../store/useNavStore";
+import { ui } from "@/models";
 
 const HomePage = () => {
-    const currentTab = useNavStore((state) => state.currentTab);
+    const currentTab = ui.use((s) => s.tab);
 
     return(
         <div className="grid grid-rows-[70px_50px_100%_10%]">

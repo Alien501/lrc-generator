@@ -1,10 +1,9 @@
 import { useRef, useEffect } from 'react';
-import { useLyricsStore } from '../../store/useLyricsStore';
+import { lyrics } from '@/models';
 
 const LyricsInputContainer = () => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const lyrics = useLyricsStore((state) => state.staticLyrics);
-    const setLyrics = useLyricsStore((state) => state.setStaticLyrics);
+    const text = lyrics.use((s) => s.text);
 
     useEffect(() => {
         const textarea = textareaRef.current;
@@ -21,20 +20,15 @@ const LyricsInputContainer = () => {
         }
     }, []);
 
-    // @ts-ignore
-    const onInputChanged = (e) => {
-        setLyrics(e.target.value);
-    }
-
     return (
         <div className="w-[99%] mx-auto h-full bg-white p-1 rounded-sm">
-            <textarea 
+            <textarea
                 ref={textareaRef}
-                onChange={onInputChanged}
+                onChange={(e) => lyrics.setText(e.target.value)}
                 name="lyrics"
-                value={lyrics}
-                id="lyrics" 
-                placeholder="Paste your lyrics here..." 
+                value={text}
+                id="lyrics"
+                placeholder="Paste your lyrics here..."
                 className="block rounded-md p-2 w-full min-h-[100px] resize-none overflow-hidden border-none focus:outline-none focus:ring-0"
             />
         </div>
@@ -42,4 +36,3 @@ const LyricsInputContainer = () => {
 };
 
 export default LyricsInputContainer;
-

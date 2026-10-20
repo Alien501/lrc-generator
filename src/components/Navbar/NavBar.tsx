@@ -1,7 +1,4 @@
-import { useLyricsStore } from "../../store/useLyricsStore";
-import { useNavStore } from "../../store/useNavStore";
-
-type TabType = 'lyrics' | 'sync';
+import { lyrics, ui, type Tab } from "@/models";
 
 interface TabButtonProps {
   label: string;
@@ -16,8 +13,8 @@ const TabButton = ({ label, isActive, onClick, disabled = false }: TabButtonProp
     className={`
       w-20 px-4 py-1 rounded-full h-10
       transition-all duration-200 ease-in-out
-      ${isActive 
-        ? 'bg-black text-white shadow-lg transform scale-105' 
+      ${isActive
+        ? 'bg-black text-white shadow-lg transform scale-105'
         : 'bg-transparent text-gray-600 hover:bg-gray-200'
       }
       focus:outline-none
@@ -28,12 +25,11 @@ const TabButton = ({ label, isActive, onClick, disabled = false }: TabButtonProp
   </button>
 );
 
+const tabs: Tab[] = ['lyrics', 'sync'];
+
 const Navbar = () => {
-  const currentTab = useNavStore((state) => state.currentTab);
-  const setCurrentTab = useNavStore((state) => state.setCurrentTab);
-  const lyrics = useLyricsStore((state) => state.staticLyrics);
-  
-  const tabs: TabType[] = ['lyrics', 'sync'];
+  const currentTab = ui.use((s) => s.tab);
+  const hasLyrics = lyrics.use(() => lyrics.hasText);
 
   return (
     <div className="h-max p-1 bg-white/80 backdrop-blur-sm w-full z-40 border-b-1 border-b-black/10 flex items-center justify-center">
@@ -43,8 +39,8 @@ const Navbar = () => {
             key={tab}
             label={tab.charAt(0).toUpperCase() + tab.slice(1)}
             isActive={currentTab === tab}
-            onClick={() => setCurrentTab(tab)}
-            disabled={lyrics.trim() != ""? false: true}
+            onClick={() => ui.setTab(tab)}
+            disabled={!hasLyrics}
           />
         ))}
       </div>

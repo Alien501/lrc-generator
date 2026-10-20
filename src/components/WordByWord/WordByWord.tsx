@@ -1,27 +1,22 @@
-import { useNavStore } from "../../store/useNavStore"
+import { useEffect } from "react";
+import { lyrics, ui } from "@/models";
 import LyricsInputContainer from "../LyricsInputContainer/LyricsInputContainer";
 import WordByWordSync from "./WordByWordSync";
 import { useSEO } from "../../hooks/useSEO";
 
 const WordByWord = () => {
-    const currentTab = useNavStore(state => state.currentTab);
-    
+    const currentTab = ui.use((s) => s.tab);
+
+    useEffect(() => lyrics.setMode('word'), []);
+
     useSEO({
         title: "Word-by-Word Lyrics Sync | LRC Generator - Ultra-Precise Lyrics Synchronization",
         description: "Achieve ultra-precise lyrics synchronization with word-by-word timing. Create professional LRC files with exact timing for each word. Perfect for detailed karaoke experiences.",
         keywords: "word by word lyrics sync, precise lyrics timing, LRC file creation, word sync tool, detailed karaoke lyrics, ultra-precise synchronization",
         url: "https://lrc-gen.alien501.in//word"
     });
-    return(
-        <>
-            {
-                currentTab == 'lyrics'?
-                <LyricsInputContainer />
-                :
-                <WordByWordSync />
-            }
-        </>
-    )
+
+    return currentTab == 'lyrics' ? <LyricsInputContainer /> : <WordByWordSync />;
 };
 
 export default WordByWord;

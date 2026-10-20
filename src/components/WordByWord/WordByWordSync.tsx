@@ -1,51 +1,41 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLyricsStore } from "../../store/useLyricsStore";
-import { useMusicStore } from "../../store/useMusicStore";
+import { lyrics, song, ui } from "@/models";
 
 const WordByWordSync = () => {
-    const { syncedLyrics, updateLyricTimestamp, currentlyActiveCard, setCurrentlyActiveCard, updateWordByWordLyrics } = useLyricsStore();
-    const { controlsState, currentTimestamp } = useMusicStore();
-    const [words, setWords] = useState<string[]>([]);
-    const [currentWordIndex, setCurrentWordIndex] = useState(0);
+    const lines = lyrics.use((s) => s.lines);
+    const activeLine = lyrics.use((s) => s.activeLine);
+    const activeWord = lyrics.use((s) => s.activeWord);
+    const expanded = ui.use((s) => s.playerExpanded);
     const [isDragging, setIsDragging] = useState(false);
     const sliderRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
+    const line = lines[activeLine];
+    const wordCount = line?.words.length ?? 0;
+
+    // Snap the handle back whenever a line is finished.
     useEffect(() => {
-        if (syncedLyrics.length > 0 && currentlyActiveCard < syncedLyrics.length) {
-            const currentLine = syncedLyrics[currentlyActiveCard]?.lyrics || "";
-            setWords(currentLine.split(' '));
-            setCurrentWordIndex(0);
-            if (sliderRef.current) {
-                sliderRef.current.style.left = '0px';
-            }
-        }
-    }, [syncedLyrics, currentlyActiveCard]);
-
-    const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-        e.preventDefault();
-        setIsDragging(true);
-    };
-
-    const handleDragEnd = () => {
-        setIsDragging(false);
-
-        if (currentWordIndex === words.length - 1) {
-            updateLyricTimestamp(currentlyActiveCard, currentTimestamp);
-            if (currentlyActiveCard < syncedLyrics.length - 1) {
-                setCurrentlyActiveCard(currentlyActiveCard + 1);
-            }
-        }
-    };
+        if (sliderRef.current) sliderRef.current.style.left = '0px';
+    }, [activeLine, line?.end]);
 
     useEffect(() => {
+        if (!isDragging) return;
+        const handleDragEnd = () => {
+            setIsDragging(false);
+            lyrics.finishLine(song.currentTime);
+        };
         document.addEventListener('mouseup', handleDragEnd);
         document.addEventListener('touchend', handleDragEnd);
         return () => {
             document.removeEventListener('mouseup', handleDragEnd);
             document.removeEventListener('touchend', handleDragEnd);
         };
-    }, [currentWordIndex, words.length, currentlyActiveCard]);
+    }, [isDragging]);
+
+    const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
 
     const handleSliderDrag = (e: React.MouseEvent | React.TouchEvent) => {
         if (!isDragging || !containerRef.current || !sliderRef.current) return;
@@ -59,51 +49,48 @@ const WordByWordSync = () => {
         const newLeft = Math.max(0, Math.min(newPosition - sliderWidth / 2, containerWidth - sliderWidth));
         sliderRef.current.style.left = `${newLeft}px`;
         const progress = newLeft / (containerWidth - sliderWidth);
-        const newWordIndex = Math.floor(progress * (words.length - 1));
-        const currentWordIndex = Math.max(0, Math.min(newWordIndex, words.length - 1))
-        updateWordByWordLyrics(currentlyActiveCard, currentWordIndex, currentTimestamp);
-        console.log("Current Time Stamp: ", currentTimestamp)
-        setCurrentWordIndex(currentWordIndex);
+        const wordIndex = Math.max(0, Math.min(Math.floor(progress * (wordCount - 1)), wordCount - 1));
+        lyrics.reachWord(wordIndex, song.currentTime);
     };
 
     return (
         <div id="sync-container" className="h-full md:w-[90%] sm:w-[99%] mx-auto relative select-none">
             <div className="space-y-4 pb-32">
-                {syncedLyrics.map((line, index) => (
-                    <div 
-                        key={index} 
+                {lines.map((l, index) => (
+                    <div
+                        key={index}
                         className={`p-4 border rounded-lg transition-all duration-200 ${
-                            index === currentlyActiveCard 
-                                ? 'bg-black/5 border-blue-500' 
-                                : index < currentlyActiveCard 
-                                    ? 'opacity-50' 
+                            index === activeLine
+                                ? 'bg-black/5 border-blue-500'
+                                : index < activeLine
+                                    ? 'opacity-50'
                                     : 'border-transparent'
                         }`}
                     >
-                        {index === currentlyActiveCard ? (
-                            line.lyrics.split(' ').map((word, wordIndex) => (
-                                <span 
-                                    key={wordIndex} 
+                        {index === activeLine ? (
+                            l.words.map((word, wordIndex) => (
+                                <span
+                                    key={wordIndex}
                                     className={`text-lg ${
-                                        wordIndex <= currentWordIndex 
-                                            ? 'text-blue-600 font-semibold' 
+                                        wordIndex <= activeWord
+                                            ? 'text-blue-600 font-semibold'
                                             : ''
                                     } transition-colors duration-200`}
                                 >
-                                    {word}{' '}
+                                    {word.text}{' '}
                                 </span>
                             ))
                         ) : (
-                            <span className="text-lg">{line.lyrics}</span>
+                            <span className="text-lg">{l.text}</span>
                         )}
                     </div>
                 ))}
             </div>
 
-            <div 
+            <div
                 ref={containerRef}
                 className={`fixed h-12 bg-black/10 rounded-full mx-auto mb-4 transition-all ${
-                    controlsState ? 'bottom-[130px]' : 'bottom-[82px]'
+                    expanded ? 'bottom-[130px]' : 'bottom-[82px]'
                 } overflow-hidden z-40`}
                 style={{
                     left: '50%',
@@ -116,24 +103,24 @@ const WordByWordSync = () => {
                 onClick={handleSliderDrag}
             >
                 <div className="absolute inset-0 flex items-center">
-                    {words.map((_, index) => (
+                    {Array.from({ length: wordCount }, (_, index) => (
                         <div
                             key={index}
-                            className={`h-1 w-1 bg-black/20 rounded-full mx-[calc(100%/${words.length})]`}
+                            className="h-1 w-1 bg-black/20 rounded-full"
                             style={{
                                 position: 'absolute',
-                                left: `${index == words.length - 1 ? (index/words.length) * 100 + 20: (index / (words.length - 1)) * 100}%`,
+                                left: `${index == wordCount - 1 ? (index / wordCount) * 100 + 20 : (index / (wordCount - 1)) * 100}%`,
                             }}
                         ></div>
                     ))}
                 </div>
-                <div 
+                <div
                     className="absolute top-0 left-0 h-full bg-black/10 rounded-l-full transition-all"
-                    style={{ 
-                        width: `${(currentWordIndex / (words.length - 1)) * 100}%`,
+                    style={{
+                        width: `${wordCount > 1 ? (activeWord / (wordCount - 1)) * 100 : 0}%`,
                     }}
                 />
-                <div 
+                <div
                     ref={sliderRef}
                     onMouseDown={handleDragStart}
                     onTouchStart={handleDragStart}
@@ -151,112 +138,3 @@ const WordByWordSync = () => {
 };
 
 export default WordByWordSync;
-
-
-
-
-// Word by word sync with button
-
-// import React, { useState, useEffect } from 'react';
-// import { useLyricsStore } from "../../store/useLyricsStore";
-// import { useMusicStore } from "../../store/useMusicStore";
-
-// const WordByWordSync = () => {
-//     const { syncedLyrics, updateLyricTimestamp, currentlyActiveCard, setCurrentlyActiveCard } = useLyricsStore();
-//     const controlsState = useMusicStore((state) => state.controlsState);
-//     const [words, setWords] = useState<string[]>([]);
-//     const [currentWordIndex, setCurrentWordIndex] = useState(0);
-
-//     useEffect(() => {
-//         if (syncedLyrics.length > 0 && currentlyActiveCard < syncedLyrics.length) {
-//             const currentLine = syncedLyrics[currentlyActiveCard]?.lyrics || "";
-//             setWords(currentLine.split(' '));
-//             setCurrentWordIndex(0);
-//         }
-//     }, [syncedLyrics, currentlyActiveCard]);
-
-//     const handleNextWord = () => {
-//         if (currentWordIndex < words.length - 1) {
-//             setCurrentWordIndex((prev) => prev + 1);
-//         } 
-//         else if (currentlyActiveCard < syncedLyrics.length - 1) {
-//             const timestamp = Date.now();
-//             updateLyricTimestamp(currentlyActiveCard, timestamp);
-//             setCurrentlyActiveCard(currentlyActiveCard + 1);
-//         }
-//     };
-
-//     const handlePreviousWord = () => {
-//         if (currentWordIndex > 0) {
-//             setCurrentWordIndex((prev) => prev - 1);
-//         } 
-//         else if (currentlyActiveCard > 0) {
-//             setCurrentlyActiveCard(currentlyActiveCard - 1);
-//         }
-//     };
-
-//     return (
-//         <div id="sync-container" className="h-full md:w-[90%] sm:w-[99%] mx-auto relative select-none">
-//             <div className="space-y-4 pb-32">
-//                 {syncedLyrics.map((line, index) => (
-//                     <div 
-//                         key={index} 
-//                         className={`p-4 border rounded-lg transition-all duration-200 ${
-//                             index === currentlyActiveCard 
-//                                 ? 'bg-black/5 border-blue-500' 
-//                                 : index < currentlyActiveCard 
-//                                     ? 'opacity-50' 
-//                                     : 'border-transparent'
-//                         }`}
-//                     >
-//                         {index === currentlyActiveCard ? (
-//                             line.lyrics.split(' ').map((word, wordIndex) => (
-//                                 <span 
-//                                     key={wordIndex} 
-//                                     className={`text-lg ${
-//                                         wordIndex <= currentWordIndex 
-//                                             ? 'text-blue-600 font-semibold' 
-//                                             : ''
-//                                     } transition-colors duration-200`}
-//                                 >
-//                                     {word}{' '}
-//                                 </span>
-//                             ))
-//                         ) : (
-//                             <span className="text-lg">{line.lyrics}</span>
-//                         )}
-//                     </div>
-//                 ))}
-//             </div>
-
-//             <div 
-//                 className={`fixed h-12 flex items-center justify-center space-x-4 mx-4 mb-4 transition-all ${
-//                     controlsState ? 'bottom-[130px]' : 'bottom-[82px]'
-//                 }`}
-//                 style={{
-//                     left: '50%',
-//                     transform: 'translateX(-50%)',
-//                     width: 'calc(100% - 2rem)',
-//                     maxWidth: '500px'
-//                 }}
-//             >
-//                 <button 
-//                     className="h-10 px-4 bg-gray-700 text-white rounded-lg hover:bg-gray-600 active:bg-gray-500 transition-all"
-//                     onClick={handlePreviousWord}
-//                     disabled={currentWordIndex === 0 && currentlyActiveCard === 0}
-//                 >
-//                     Previous
-//                 </button>
-//                 <button 
-//                     className="h-10 px-4 bg-blue-700 text-white rounded-lg hover:bg-blue-600 active:bg-blue-500 transition-all"
-//                     onClick={handleNextWord}
-//                     disabled={currentWordIndex === words.length - 1 && currentlyActiveCard === syncedLyrics.length - 1}
-//                 >
-//                     Next
-//                 </button>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default WordByWordSync;

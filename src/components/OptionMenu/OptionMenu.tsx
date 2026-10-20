@@ -5,6 +5,7 @@ type OptionMenuProps = {
   label: string;
   ctaText: string;
   id: string;
+  disabled?: boolean;
   inputType?: "file" | "function";
   fileType?: string;
   onClick?: (e: any) => void;
@@ -14,6 +15,7 @@ export default function OptionMenu({
   label,
   ctaText,
   id,
+  disabled=false,
   inputType = "function",
   fileType = "**/**",
   onClick = () => {},
@@ -42,7 +44,7 @@ export default function OptionMenu({
             className="hidden"
           />
         )}
-        <Button className="rounded-sm p-3" onClick={handleButtonClick}>
+        <Button className="rounded-sm p-3" disabled={disabled} onClick={handleButtonClick}>
           {ctaText}
         </Button>
       </div>
