@@ -110,6 +110,11 @@ export class Lyrics extends Model<LyricsState> {
         });
     };
 
+    adjustLine = (index: number, timeToAdjust: number) => {
+        this.updateLine(index, (line) => line.time == null ? line: {...line, time: line.time + timeToAdjust});
+        this.setState({activeLine: index});
+    }
+
     private updateLine(index: number, update: (line: Line) => Line) {
         this.setState({
             lines: this.state.lines.map((line, i) => (i === index ? update(line) : line)),

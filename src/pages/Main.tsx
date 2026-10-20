@@ -7,10 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { lyrics, song } from "@/models";
+import { useNavigate } from "react-router-dom";
 
 export function MainPage() {
   const hasSong = song.use((s) => s.file !== null);
   const hasLyrics = lyrics.use((l) => l.text.trim().length > 0 );
+  const router = useNavigate();
 
   const onSongSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,7 +53,7 @@ export function MainPage() {
           <CardContent>
             <p className="text-sm font-medium text-center mb-2 text-muted-foreground">Start Syncing</p>
             <ButtonGroup>
-              <Button className="py-4 px-8 rounded-sm">
+              <Button onClick={() => router('/line')} className="py-4 px-8 rounded-sm">
                 Line-By-Line
               </Button>
               <Button className="py-4 px-8 rounded-sm">

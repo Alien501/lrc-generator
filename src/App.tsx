@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
-import LineByLine from './components/LineByLine/LineByLine'
 import WordByWord from './components/WordByWord/WordByWord'
 import Menu from './pages/Menu'
 import Modal from './components/modal/modal'
 import { Analytics } from "@vercel/analytics/react"
 import { MainPage } from './pages/Main'
 import { Toaster } from 'sonner'
+import LineByLineV2 from './components/LineByLine/LineByLineV2'
 
 const NotFound = () => (
   <div className='h-full w-full flex flex-col space-y-2 justify-center items-center'>
@@ -19,7 +19,7 @@ const NotFound = () => (
 const router = createBrowserRouter([
   { path: '/', element: <MainPage /> },
   { path: '/menu', element: <Menu /> },
-  { path: '/line', element: <LineByLine /> },
+  { path: '/line', element: <LineByLineV2 /> },
   { path: '/word', element: <WordByWord /> },
   { path: '/*', element: <NotFound /> },
 ])
