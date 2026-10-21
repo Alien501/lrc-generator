@@ -79,8 +79,8 @@ export default function MusicPlayer() {
       </div>
       <div className="w-full gap-y-2 flex flex-col">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-muted-foreground">{formatClock(songDuration)}</p>
           <p className="text-xs font-medium text-muted-foreground">{formatClock(currentTimeStamp)}</p>
+          <p className="text-xs font-medium text-muted-foreground">{formatClock(songDuration)}</p>
         </div>
         <div>
           <Progress
