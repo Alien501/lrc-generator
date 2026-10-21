@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar/NavBar";
 import TabContainer from "../components/TabContainer/TabContainer";
-import TopBar from "../components/TopBar/TopBar";
+// import TopBar from "../components/TopBar/TopBar";
 import MusicBar from "../components/MusicBar/MusicBar";
 
 const DefaultLayout = () => {
@@ -9,7 +9,7 @@ const DefaultLayout = () => {
         <>
             <main className='font-display bg-gray-300/40 min-h-screen'>
                 <header>
-                    <TopBar />
+                    {/* <TopBar /> */}
                     <Navbar />
                 </header>
                 <section>

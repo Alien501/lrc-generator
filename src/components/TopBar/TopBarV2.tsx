@@ -1,10 +1,11 @@
 import { Card, CardContent } from "../ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft02FreeIcons, Download02Icon } from "@hugeicons/core-free-icons";
+import { ArrowLeft02FreeIcons, Download02Icon, User02Icon } from "@hugeicons/core-free-icons";
 import SaveCard from "../SaveCard/SaveCard";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { song } from "@/models";
+import AboutCard from "../AboutCard/AboutCard";
 
 export default function TopBarV2() {
     const navigate = useNavigate();
@@ -29,12 +30,19 @@ export default function TopBarV2() {
                 {songName}
               </p>
             </div>
-            <div>
+            <div className="flex items-center gap-x-1">
               <SaveCard
                 trigger={
                   <Button className="rounded-sm">
                     <HugeiconsIcon icon={Download02Icon} />
                     Save
+                  </Button>
+                }
+              />
+              <AboutCard
+                trigger={
+                  <Button className="rounded-sm" variant="secondary">
+                    <HugeiconsIcon icon={User02Icon} />
                   </Button>
                 }
               />
