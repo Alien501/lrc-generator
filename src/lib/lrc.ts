@@ -29,8 +29,8 @@ export function buildLrc(lines: Line[], mode: SyncMode, meta: LrcMeta) {
         `[al:${meta.album || "Album"}]`,
         `[lr:${meta.lyricist || "Unknown"}]`,
         `[length:${meta.length || "00:00"}]`,
-        `[by:${meta.by || "Generated with LRC Generator"}]`,
-        `[re:LRC Generator - ${mode === "word" ? "Word-by-Word" : "Line-by-Line"} Sync]`,
+        `[by:${meta.by || "Generated with LRC Generator - Alien501"}]`,
+        `[re:LRC Generator - ${mode === "word" ? "Word-by-Word" : "Line-by-Line"} Sync - Alien501]`,
         "",
     ];
     const body = mode === "word" ? wordByWord(lines) : lineByLine(lines);

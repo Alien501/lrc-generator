@@ -20,7 +20,7 @@ export function MainPage() {
   };
 
   return (
-    <div className="h-screen relative overflow-hidden flex justify-center items-center flex-col gap-y-4 bg-zinc-100 max-h-[90%]">
+    <div className="h-dvh relative overflow-hidden flex justify-center items-center flex-col gap-y-4 bg-zinc-100 max-h-[90%]">
       <div className="relative">
         <div className={`absolute z-0  left-1/2 -translate-1/2 transition-[top] duration-500 ease-in-out ${hasSong ? "top-[-12%]": "top-[40%]"}`}>
             <SongPlayer />
@@ -49,7 +49,7 @@ export function MainPage() {
         </div>
       }
       {
-        <Card className={`rounded-sm bg-white border border-zinc-200 shadow-xs p-2 absolute z-10 left-1/2 -translate-1/2 ease-in-out duration-300 ${hasLyrics ? 'bottom-2': '-bottom-40'}`}>
+        <Card className={`rounded-sm bg-white border border-zinc-200 shadow-xs p-2 absolute z-10 left-1/2 -translate-1/2 ease-in-out duration-300 ${hasLyrics ? 'bottom-[-20px]': '-bottom-40'}`}>
           <CardContent>
             <p className="text-sm font-medium text-center mb-2 text-muted-foreground">Start Syncing</p>
             <ButtonGroup>

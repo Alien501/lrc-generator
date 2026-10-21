@@ -31,7 +31,7 @@ const LyricsCard = ({ text, time = null, isActive }: LyricsCardProps) => {
                 items-center
                 ${isActive ? 'ring-2 ring-blue-400' : ''}
                 ${isSynced ? 'bg-neutral-100 border border-neutral-400/10' : ''}
-                min-h-[50px]
+                min-h-12.5
                 rounded-md
                 m-2
                 p-1

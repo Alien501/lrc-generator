@@ -1,79 +1,122 @@
-import { useState, FormEvent, ChangeEvent } from "react"
-import { lyrics, resetSession, song } from "@/models"
-import { buildLrc, downloadText, type LrcMeta } from "@/lib/lrc"
+import { useState, FormEvent, ChangeEvent, useId } from "react";
+import { lyrics, resetSession, song } from "@/models";
+import { buildLrc, downloadText, type LrcMeta } from "@/lib/lrc";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { copyToClipboard } from "@/lib/utils";
 
-const fields: { name: keyof LrcMeta; label: string; placeholder: string; required?: boolean }[] = [
-    { name: "title", label: "Title", placeholder: "Enter track title", required: true },
-    { name: "artist", label: "Artist", placeholder: "Enter artist name" },
-    { name: "album", label: "Album", placeholder: "Enter album name" },
-    { name: "lyricist", label: "Lyricist", placeholder: "Enter lyricist name" },
-    { name: "length", label: "Length", placeholder: "Enter song length (e.g., 3:45)" },
-    { name: "by", label: "By", placeholder: "Enter 'by' information" },
+const fields: {
+  name: keyof LrcMeta;
+  label: string;
+  placeholder: string;
+  required?: boolean;
+}[] = [
+  {
+    name: "title",
+    label: "Title",
+    placeholder: "Enter track title",
+    required: true,
+  },
+  { name: "artist", label: "Artist", placeholder: "Enter artist name" },
+  { name: "album", label: "Album", placeholder: "Enter album name" },
+  { name: "lyricist", label: "Lyricist", placeholder: "Enter lyricist name" },
+  {
+    name: "length",
+    label: "Length",
+    placeholder: "Enter song length (e.g., 3:45)",
+  },
+  { name: "by", label: "By", placeholder: "Enter 'by' information" },
 ];
 
-const SaveCard = () => {
-    const [meta, setMeta] = useState<LrcMeta>({
-        title: "",
-        artist: "",
-        album: "",
-        lyricist: "",
-        length: "",
-        by: "",
-    });
+const SaveCard = ({ trigger }: { trigger: React.JSX.Element }) => {
+  const formId = useId();
+  const songName = song.baseName;
+  const songDuration = song.use((s) => s.duration);
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setMeta({ ...meta, [e.target.name]: e.target.value })
-    }
+  const [meta, setMeta] = useState<LrcMeta>({
+    title: songName || "",
+    artist: "",
+    album: "",
+    lyricist: "",
+    length: songDuration.toString() || "",
+    by: "",
+  });
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const { lines, mode } = lyrics.getState();
-        const fileName = `${song.baseName || 'lyrics'}-${mode}-sync.lrc`;
-        downloadText(buildLrc(lines, mode, meta), fileName);
-    }
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setMeta({ ...meta, [e.target.name]: e.target.value });
+  };
 
-    const onSyncAnother = () => {
-        resetSession();
-        window.location.pathname = '/';
-    }
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { lines, mode } = lyrics.getState();
+    const fileName = `${song.baseName || "lyrics"}.lrc`;
+    downloadText(buildLrc(lines, mode, meta), fileName);
+  };
 
-    return (
-        <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-6 py-4">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {fields.map((field) => (
-                        <div key={field.name}>
-                            <label htmlFor={field.name} className="block text-sm font-medium text-gray-700">
-                                {field.label}
-                            </label>
-                            <input
-                                required={field.required}
-                                id={field.name}
-                                name={field.name}
-                                type="text"
-                                placeholder={field.placeholder}
-                                value={meta[field.name]}
-                                onChange={handleChange}
-                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
-                                focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
-                            />
-                        </div>
-                    ))}
-                    <div>
-                        <button
-                            type="submit"
-                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-black/90"
-                        >
-                            Save
-                        </button>
-                    </div>
-                </form>
-                <button onClick={onSyncAnother} className="w-full mt-4 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-black/90">
-                    Sync Another!
-                </button>
+  const onSyncAnother = () => {
+    resetSession();
+    window.location.pathname = "/";
+  };
+
+  const onCopy = () => {
+    const { lines, mode } = lyrics.getState();
+    const lrcContent = buildLrc(lines, mode, meta);
+    copyToClipboard(lrcContent);
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger>{trigger}</DialogTrigger>
+
+      <DialogContent className="rounded-sm">
+        <DialogHeader>
+          <DialogTitle>Save/Download</DialogTitle>
+        </DialogHeader>
+
+        <form id={formId} onSubmit={handleSubmit} className="space-y-4">
+          {fields.map((field) => (
+            <div key={field.name} className="grid gap-2">
+              <Label htmlFor={field.name}>{field.label}</Label>
+              <Input
+                required={field.required}
+                id={field.name}
+                name={field.name}
+                type="text"
+                placeholder={field.placeholder}
+                value={meta[field.name]}
+                onChange={handleChange}
+                className="rounded-sm"
+              />
             </div>
+          ))}
+        </form>
+
+        <DialogFooter className="!flex-row items-center justify-between gap-2 sm:justify-between border-t-2 border-t-zinc-200 pt-2">
+        <Button onClick={onCopy} type="button" variant="secondary" className="rounded-sm">
+            Copy
+        </Button>
+
+        <div className="flex items-center gap-2">
+            <Button type="submit" form={formId} className="rounded-sm">
+            Save
+            </Button>
+            <Button type="button" variant="outline" className="rounded-sm" onClick={onSyncAnother}>
+            Sync Another!
+            </Button>
         </div>
-    )
-}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export default SaveCard;
