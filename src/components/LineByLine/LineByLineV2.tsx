@@ -4,10 +4,13 @@ import LyricsCardV2 from "../LyricsCard/LyricsCardV2";
 import MusicBarV2 from "../MusicBar/MusicBarV2";
 import SyncLayout from "../Layout/syncLayout";
 import { LineByLineControl } from "../SyncControls/SyncControls";
+import { useEffect } from "react";
 
 export default function LineByLineV2() {
   const lines = lyrics.use((l) => l.lines);
   const activeLine = lyrics.use((l) => l.activeLine);
+  
+  useEffect(() => lyrics.setMode('line'), []);
 
   return (
     <SyncLayout

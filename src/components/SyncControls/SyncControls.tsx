@@ -1,5 +1,5 @@
-import { lyrics, song } from "@/models";
-import { useEffect, useRef, useState } from "react";
+import { lyrics, song, wordSpans } from "@/models";
+import { useEffect } from "react";
 import { Card, CardContent } from "../ui/card";
 import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 import { Button } from "../ui/button";
@@ -80,64 +80,39 @@ export function LineByLineControl() {
 }
 
 export function WordByWordControl() {
-  const activeLine = lyrics.use((s) => s.activeLine);
-  const activeWord = lyrics.use((s) => s.activeWord);
-  const lines = lyrics.use((s) => s.lines);
+  const words = lyrics.use((s) => s.lines[s.activeLine]?.words);
+  const tracker = lyrics.use((s) => s.tracker);
 
-  const line = lines[activeLine];
-  const wordCount = line?.words.length ?? 0;
-  const maxWordIndex = Math.max(wordCount - 1, 0);
-  const disabled = maxWordIndex <= 0;
+  const length = words?.map((w) => w.text).join(" ").length ?? 0;
+  // An empty line still needs some room to slide through.
+  const max = Math.max(length, 1);
+  const spans = words ? wordSpans(words) : [];
 
-  // Local value drives the thumb so it doesn't depend on reachWord()
-  // propagating back through the store during the drag.
-  const [wordValue, setWordValue] = useState(activeWord);
-  const draggingRef = useRef(false);
-
-  // Only resync when we're *not* dragging — the store may lag or not
-  // update at all during a drag.
-  useEffect(() => {
-    if (!draggingRef.current) setWordValue(activeWord);
-  }, [activeWord, activeLine]);
-
-  const handleValueChange = (v: number[]) => {
-    draggingRef.current = true;
-    setWordValue(v[0]);
-    lyrics.reachWord(v[0], song.currentTime);
-  };
-
-  const handleValueCommit = (v: number[]) => {
-    lyrics.reachWord(v[0], song.currentTime);
-    lyrics.finishLine(song.currentTime);
-    draggingRef.current = false;
-  };
+  const first = (v: number | readonly number[]) => (typeof v === "number" ? v : v[0]);
 
   return (
     <SyncControls
       control={
         <div className="relative w-[460px] max-w-[calc(100vw-2rem)]">
-          {/* Word marker dots — behind the slider */}
+          {/* Word start markers, behind the slider */}
           <div className="absolute inset-y-0 left-5 right-5 pointer-events-none">
-            {Array.from({ length: wordCount }, (_, i) => {
-              const left = maxWordIndex > 0 ? (i / maxWordIndex) * 100 : 0;
-              return (
-                <div
-                  key={i}
-                  className="absolute top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/40"
-                  style={{ left: `${left}%` }}
-                />
-              );
-            })}
+            {spans.map((span, i) => (
+              <div
+                key={i}
+                className="absolute top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/40"
+                style={{ left: `${(span.start / max) * 100}%` }}
+              />
+            ))}
           </div>
 
           <Slider
-            value={[Math.min(wordValue, maxWordIndex)]}
+            value={[tracker]}
             min={0}
-            max={Math.max(maxWordIndex, 1)}
-            step={1}
-            disabled={disabled}
-            onValueChange={handleValueChange}
-            onValueCommit={handleValueCommit}
+            max={max}
+            step={0.01}
+            disabled={!words}
+            onValueChange={(v) => lyrics.track(first(v), song.currentTime)}
+            onValueCommitted={lyrics.finishTrack}
             className={cn(
               "relative",
               "[&_[data-slot=slider-track]]:h-12",
@@ -173,7 +148,6 @@ export function WordByWordControl() {
     />
   );
 }
-
 
 function SyncControls({ control }: { control: React.JSX.Element }) {
   return (

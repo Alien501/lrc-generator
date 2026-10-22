@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
-import WordByWord from './components/WordByWord/WordByWord'
 import Menu from './pages/Menu'
 import Modal from './components/modal/modal'
 import { Analytics } from "@vercel/analytics/react"

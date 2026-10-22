@@ -12,5 +12,5 @@ export function resetSession() {
     ui.reset();
 }
 
+export { wordSpans } from "./Lyrics";
 export type { Line, SyncMode, Word } from "./Lyrics";
-export type { Tab } from "./UI";

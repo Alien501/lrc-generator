@@ -4,13 +4,13 @@ export type SyncMode = "line" | "word";
 
 export interface Word {
   text: string;
-  time: number | null;
+  time: number | null; // tracker entered the word
+  end: number | null; // tracker left the word
 }
 
 export interface Line {
   text: string;
   time: number | null; // line start (line mode)
-  end: number | null; // line end (word mode)
   words: Word[];
 }
 
@@ -20,10 +20,22 @@ interface LyricsState {
   mode: SyncMode;
   // Line mode starts at -1, meaning "before the first line".
   activeLine: number;
-  activeWord: number;
+  tracker: number;
 }
 
 const startLine = (mode: SyncMode) => (mode === "line" ? -1 : 0);
+
+const toWords = (text: string): Word[] =>
+  text.split(" ").map((word) => ({ text: word, time: null, end: null }));
+
+export const wordSpans = (words: Word[]) => {
+  let offset = 0;
+  return words.map((word) => {
+    const span = { start: offset, end: offset + word.text.length };
+    offset = span.end + 1;
+    return span;
+  });
+};
 
 const parse = (text: string): Line[] => {
   const rows = text.split("\n").map((row) => row.trim());
@@ -31,8 +43,7 @@ const parse = (text: string): Line[] => {
   return rows.map((row) => ({
     text: row,
     time: null,
-    end: null,
-    words: row.split(" ").map((word) => ({ text: word, time: null })),
+    words: toWords(row),
   }));
 };
 
@@ -41,7 +52,7 @@ const initialState: LyricsState = {
   lines: [],
   mode: "line",
   activeLine: -1,
-  activeWord: 0,
+  tracker: 0,
 };
 
 export class Lyrics extends Model<LyricsState> {
@@ -58,12 +69,12 @@ export class Lyrics extends Model<LyricsState> {
       text,
       lines: parse(text),
       activeLine: startLine(this.state.mode),
-      activeWord: 0,
+      tracker: 0,
     });
   };
 
   setMode = (mode: SyncMode) => {
-    this.setState({ mode, activeLine: startLine(mode), activeWord: 0 });
+    this.setState({ mode, activeLine: startLine(mode), tracker: 0 });
   };
 
   reset = () => this.setState(initialState);
@@ -89,27 +100,33 @@ export class Lyrics extends Model<LyricsState> {
 
   // --- Word-by-word ---
 
-  // Marks the slider reaching a word; a word keeps its first stamp.
-  reachWord = (index: number, time: number) => {
-    this.updateLine(this.state.activeLine, (line) => ({
-      ...line,
-      words: line.words.map((word, i) =>
-        i === index && word.time === null ? { ...word, time } : word,
-      ),
-    }));
-    this.setState({ activeWord: index });
+  // Moves the tracker to `pos`: words it enters get a start, words it leaves get an end.
+  // Moving back clears stamps past the tracker, so a part can simply be re-slid.
+  track = (pos: number, time: number) => {
+    this.updateLine(this.state.activeLine, (line) => {
+      const spans = wordSpans(line.words);
+      return {
+        ...line,
+        words: line.words.map((word, i) => {
+          const entered = pos > spans[i].start;
+          const left = entered && pos >= spans[i].end;
+          return {
+            ...word,
+            time: entered ? (word.time ?? time) : null,
+            end: left ? (word.end ?? time) : null,
+          };
+        }),
+      };
+    });
+    this.setState({ tracker: pos });
   };
 
-  // Closes the active line once its last word is reached, then advances.
-  finishLine = (time: number) => {
-    const { activeLine, activeWord, lines } = this.state;
-    const line = lines[activeLine];
-    if (!line || activeWord !== line.words.length - 1) return;
-    this.updateLine(activeLine, (l) => ({ ...l, end: time }));
-    this.setState({
-      activeLine: activeLine < lines.length - 1 ? activeLine + 1 : activeLine,
-      activeWord: 0,
-    });
+  // Called when the tracker is released: advances once the whole line has been slid through.
+  finishTrack = () => {
+    const { activeLine, lines } = this.state;
+    const words = lines[activeLine]?.words ?? [];
+    if (words[words.length - 1]?.end == null || activeLine >= lines.length - 1) return;
+    this.setState({ activeLine: activeLine + 1, tracker: 0 });
   };
 
   adjustLine = (index: number, timeToAdjust: number) => {
@@ -132,13 +149,12 @@ export class Lyrics extends Model<LyricsState> {
     const body = hasSentinel ? lines.slice(0, -1) : lines;
     const sentinel: Line = hasSentinel
       ? lines[lines.length - 1]
-      : { text: "", time: null, end: null, words: [] };
+      : { text: "", time: null, words: [] };
 
     const makeLine = (): Line => ({
       text,
       time: null,
-      end: null,
-      words: text.split(" ").map((w) => ({ text: w, time: null })),
+      words: toWords(text),
     });
 
     if (update === "insert" || update === "duplicate") {
@@ -168,11 +184,11 @@ export class Lyrics extends Model<LyricsState> {
     });
   }
 
-  // word mode: jump to a line without touching any timestamps
+  // word mode: jump to a line without touching any timestamps - Song seek should be handled near Caller
   goToLine = (index: number) => {
     const { lines } = this.state;
     if (lines.length === 0) return;
     const clamped = Math.max(0, Math.min(index, lines.length - 1));
-    this.setState({ activeLine: clamped, activeWord: 0 });
+    this.setState({ activeLine: clamped, tracker: 0 });
   };
 }
