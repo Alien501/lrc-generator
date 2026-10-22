@@ -97,7 +97,7 @@ function TrackedLine({ line, tracker }: { line: Line; tracker: number }) {
                             className="bg-clip-text text-transparent relative z-1 leading-relaxed"
                             style={{ backgroundImage: `linear-gradient(to right, var(--foreground) ${fill}%, var(--muted-foreground) ${fill}%)` }}
                         >
-                        <span style={{ left: `${fill}%` }} className={`h-6.5 w-0.75 rounded-sm absolute  z-5 top-1/2 -translate-1/2 duration-30 ease-in-out ${(fill%100) == 0? "bg-transparent": "bg-zinc-900"}`}></span>
+                        <span style={{ left: `${fill}%` }} className={`h-6.5 w-0.75 rounded-sm absolute  z-5 top-1/2 -translate-1/2 ${(fill%100) == 0? "bg-transparent": "bg-zinc-900"}`}></span>
                             {/* ${(fill%100) == 0? "left-0": `left-${[fill]}px`} */}
                             {word.text}
                         </span>{" "}
