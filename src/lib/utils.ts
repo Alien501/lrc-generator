@@ -1,6 +1,14 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { toast } from "sonner";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+export { cn } from "cn"
+
+export async function readFromClipboard() {
+    const clipboardContent = await navigator.clipboard.readText();
+    toast.success("Pasted content from Clipboard successfully!");
+    return clipboardContent;
+}
+
+export async function copyToClipboard(textToCopy: string) {
+    await navigator.clipboard.writeText(textToCopy);
+    toast.success("Copied content to Clipboard successfully!");
 }
