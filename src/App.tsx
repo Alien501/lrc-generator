@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { MainPage } from './pages/Main'
 import { Toaster } from 'sonner'
 import LineByLineV2 from './components/LineByLine/LineByLineV2'
+import WordByWordSyncV2 from './components/WordByWord/WordByWordSyncV2'
 
 const NotFound = () => (
   <div className='h-full w-full flex flex-col space-y-2 justify-center items-center'>
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
   { path: '/', element: <MainPage /> },
   { path: '/menu', element: <Menu /> },
   { path: '/line', element: <LineByLineV2 /> },
-  { path: '/word', element: <WordByWord /> },
+  { path: '/word', element: <WordByWordSyncV2 /> },
   { path: '/*', element: <NotFound /> },
 ])
 

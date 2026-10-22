@@ -56,7 +56,7 @@ export function MainPage() {
               <Button onClick={() => router('/line')} className="py-4 px-8 rounded-sm">
                 Line-By-Line
               </Button>
-              <Button className="py-4 px-8 rounded-sm">
+              <Button onClick={() => router('/word')} className="py-4 px-8 rounded-sm">
                 Word-By-Word
               </Button>
             </ButtonGroup>

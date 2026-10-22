@@ -167,4 +167,12 @@ export class Lyrics extends Model<LyricsState> {
       ),
     });
   }
+
+  // word mode: jump to a line without touching any timestamps
+  goToLine = (index: number) => {
+    const { lines } = this.state;
+    if (lines.length === 0) return;
+    const clamped = Math.max(0, Math.min(index, lines.length - 1));
+    this.setState({ activeLine: clamped, activeWord: 0 });
+  };
 }

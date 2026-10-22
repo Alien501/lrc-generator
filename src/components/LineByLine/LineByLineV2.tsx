@@ -3,7 +3,7 @@ import TopBarV2 from "../TopBar/TopBarV2";
 import LyricsCardV2 from "../LyricsCard/LyricsCardV2";
 import MusicBarV2 from "../MusicBar/MusicBarV2";
 import SyncLayout from "../Layout/syncLayout";
-import LineByLineControl from "../SyncControls/SyncControls";
+import { LineByLineControl } from "../SyncControls/SyncControls";
 
 export default function LineByLineV2() {
   const lines = lyrics.use((l) => l.lines);

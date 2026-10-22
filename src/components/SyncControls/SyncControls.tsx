@@ -1,5 +1,5 @@
 import { lyrics, song } from "@/models";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 import { Button } from "../ui/button";
@@ -12,8 +12,10 @@ import {
   PencilEdit01Icon,
   Queue02Icon,
 } from "@hugeicons/core-free-icons";
+import { cn } from "cn";
+import { Slider } from "../ui/slider";
 
-export default function LineByLineControl() {
+export function LineByLineControl() {
   const atStart = lyrics.use((l) => l.activeLine < 0);
 
   useEffect(() => {
@@ -76,6 +78,102 @@ export default function LineByLineControl() {
     />
   );
 }
+
+export function WordByWordControl() {
+  const activeLine = lyrics.use((s) => s.activeLine);
+  const activeWord = lyrics.use((s) => s.activeWord);
+  const lines = lyrics.use((s) => s.lines);
+
+  const line = lines[activeLine];
+  const wordCount = line?.words.length ?? 0;
+  const maxWordIndex = Math.max(wordCount - 1, 0);
+  const disabled = maxWordIndex <= 0;
+
+  // Local value drives the thumb so it doesn't depend on reachWord()
+  // propagating back through the store during the drag.
+  const [wordValue, setWordValue] = useState(activeWord);
+  const draggingRef = useRef(false);
+
+  // Only resync when we're *not* dragging — the store may lag or not
+  // update at all during a drag.
+  useEffect(() => {
+    if (!draggingRef.current) setWordValue(activeWord);
+  }, [activeWord, activeLine]);
+
+  const handleValueChange = (v: number[]) => {
+    draggingRef.current = true;
+    setWordValue(v[0]);
+    lyrics.reachWord(v[0], song.currentTime);
+  };
+
+  const handleValueCommit = (v: number[]) => {
+    lyrics.reachWord(v[0], song.currentTime);
+    lyrics.finishLine(song.currentTime);
+    draggingRef.current = false;
+  };
+
+  return (
+    <SyncControls
+      control={
+        <div className="relative w-[460px] max-w-[calc(100vw-2rem)]">
+          {/* Word marker dots — behind the slider */}
+          <div className="absolute inset-y-0 left-5 right-5 pointer-events-none">
+            {Array.from({ length: wordCount }, (_, i) => {
+              const left = maxWordIndex > 0 ? (i / maxWordIndex) * 100 : 0;
+              return (
+                <div
+                  key={i}
+                  className="absolute top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/40"
+                  style={{ left: `${left}%` }}
+                />
+              );
+            })}
+          </div>
+
+          <Slider
+            value={[Math.min(wordValue, maxWordIndex)]}
+            min={0}
+            max={Math.max(maxWordIndex, 1)}
+            step={1}
+            disabled={disabled}
+            onValueChange={handleValueChange}
+            onValueCommit={handleValueCommit}
+            className={cn(
+              "relative",
+              "[&_[data-slot=slider-track]]:h-12",
+              "[&_[data-slot=slider-track]]:rounded-full",
+              "[&_[data-slot=slider-track]]:bg-black/10",
+              "[&_[data-slot=slider-range]]:rounded-full",
+              "[&_[data-slot=slider-range]]:bg-black/20",
+              "[&_[data-slot=slider-thumb]]:h-10",
+              "[&_[data-slot=slider-thumb]]:w-10",
+              "[&_[data-slot=slider-thumb]]:rounded-full",
+              "[&_[data-slot=slider-thumb]]:border-0",
+              "[&_[data-slot=slider-thumb]]:bg-black",
+              "[&_[data-slot=slider-thumb]]:shadow-lg",
+              "[&_[data-slot=slider-thumb]]:hover:shadow-xl",
+              "[&_[data-slot=slider-thumb]]:cursor-grab",
+              "[&_[data-slot=slider-thumb]]:active:cursor-grabbing",
+              // hamburger glyph painted with a ::before + box-shadow trick
+              "[&_[data-slot=slider-thumb]]:before:content-['']",
+              "[&_[data-slot=slider-thumb]]:before:absolute",
+              "[&_[data-slot=slider-thumb]]:before:left-1/2",
+              "[&_[data-slot=slider-thumb]]:before:top-1/2",
+              "[&_[data-slot=slider-thumb]]:before:h-0.5",
+              "[&_[data-slot=slider-thumb]]:before:w-4",
+              "[&_[data-slot=slider-thumb]]:before:-translate-x-1/2",
+              "[&_[data-slot=slider-thumb]]:before:-translate-y-1/2",
+              "[&_[data-slot=slider-thumb]]:before:rounded-full",
+              "[&_[data-slot=slider-thumb]]:before:bg-white",
+              "[&_[data-slot=slider-thumb]]:before:shadow-[0_-6px_0_0_white,0_6px_0_0_white]",
+            )}
+          />
+        </div>
+      }
+    />
+  );
+}
+
 
 function SyncControls({ control }: { control: React.JSX.Element }) {
   return (
