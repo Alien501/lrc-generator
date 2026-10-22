@@ -1,3 +1,4 @@
+import AboutCard from "@/components/AboutCard/AboutCard";
 import { PauseIcon, PlayIcon } from "@/components/icons/icons";
 import LyricInput from "@/components/LyricInput/LyricInput";
 import OptionMenu from "@/components/OptionMenu/OptionMenu";
@@ -6,7 +7,10 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { useSEO } from "@/hooks/useSEO";
 import { lyrics, song } from "@/models";
+import { AlertCircleIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useNavigate } from "react-router-dom";
 
 export function MainPage() {
@@ -19,8 +23,51 @@ export function MainPage() {
     if (file) song.load(file);
   };
 
+useSEO({
+  title:
+    "LRC Generator - Free Word-by-Word & Line-by-Line Lyrics Sync | Karaoke Maker",
+  description:
+    "Free online LRC generator with word-by-word and line-by-line sync. Create enhanced LRC files for karaoke, lyric videos, and music players. Supports instrumental sections, duplicate lines, keyboard shortcuts, and full accessibility – no install needed.",
+  keywords: [
+    // Primary
+    "LRC generator",
+    "LRC maker",
+    "lyrics sync",
+    // Mode-specific
+    "word by word LRC",
+    "line by line LRC",
+    "enhanced LRC generator",
+    "karaoke lyrics sync",
+    // Feature-specific
+    "LRC generator with instrumental",
+    "duplicate lyric lines",
+    "LRC editor keyboard shortcuts",
+    "accessible lyrics synchronizer",
+    // Long-tail / intent
+    "free online LRC tool",
+    "create LRC file without install",
+    "sync lyrics to music online",
+    "karaoke subtitle maker",
+  ].join(", "),
+  url: "https://lrc-gen.alien501.in/menu",
+});
+
   return (
     <div className="h-dvh relative overflow-hidden flex justify-center items-center flex-col gap-y-4 bg-zinc-100 max-h-[90%]">
+      <Card className="absolute left-1/2 top-5 -translate-1/2 w-[95%] sm:w-[80%] h-16 bg-white border-zinc-200 rounded-bl-md rounded-br-md shadow-sm">
+        <CardContent className="flex flex-col justify-end">
+          <div className="mt-2 flex flex-row items-center justify-between">
+            <p className="text-lg font-semibold">LRC Generator</p>
+            <AboutCard
+                trigger={
+                  <Button className="rounded-sm" variant="secondary">
+                    <HugeiconsIcon icon={AlertCircleIcon} />
+                  </Button>
+                }
+              />
+          </div>
+        </CardContent>
+      </Card>
       <div className="relative">
         <div className={`absolute z-0  left-1/2 -translate-1/2 transition-[top] duration-500 ease-in-out ${hasSong ? "top-[-12%]": "top-[40%]"}`}>
             <SongPlayer />

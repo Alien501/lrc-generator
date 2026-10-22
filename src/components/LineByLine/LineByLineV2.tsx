@@ -5,10 +5,17 @@ import MusicBarV2 from "../MusicBar/MusicBarV2";
 import SyncLayout from "../Layout/syncLayout";
 import { LineByLineControl } from "../SyncControls/SyncControls";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LineByLineV2() {
   const lines = lyrics.use((l) => l.lines);
   const activeLine = lyrics.use((l) => l.activeLine);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if(lines.length === 0) navigate('/');
+  }, []);
+
   
   useEffect(() => lyrics.setMode('line'), []);
 

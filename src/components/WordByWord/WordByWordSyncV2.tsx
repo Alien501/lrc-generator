@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons";
 import { WordByWordControl } from "../SyncControls/SyncControls";
+import { useNavigate } from "react-router-dom";
 
 export default function WordByWordSyncV2() {
     useEffect(() => lyrics.setMode("word"), []);
@@ -27,6 +28,11 @@ function WordByWordLyricContainer() {
     const lines = lyrics.use((l) => l.lines);
     const activeLine = lyrics.use((l) => l.activeLine);
     const tracker = lyrics.use((l) => l.tracker);
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        if(lines.length === 0) navigate('/');
+    }, []);
 
     const mainLine = lines[activeLine];
     if (!mainLine) return null;

@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft02FreeIcons, Download02Icon, User02Icon } from "@hugeicons/core-free-icons";
+import { AlertCircleIcon, ArrowLeft02FreeIcons, Download02Icon } from "@hugeicons/core-free-icons";
 import SaveCard from "../SaveCard/SaveCard";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
@@ -42,7 +42,7 @@ export default function TopBarV2() {
               <AboutCard
                 trigger={
                   <Button className="rounded-sm" variant="secondary">
-                    <HugeiconsIcon icon={User02Icon} />
+                    <HugeiconsIcon icon={AlertCircleIcon} />
                   </Button>
                 }
               />
