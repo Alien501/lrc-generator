@@ -9,7 +9,7 @@ import {
   GoBackward5SecIcon,
   GoForward5SecIcon,
 } from "@hugeicons/core-free-icons";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ButtonGroup } from "../ui/button-group";
 import { Toggle } from "../ui/toggle";
 
@@ -23,21 +23,37 @@ export default function MusicPlayer() {
     s.duration ? (s.position / s.duration) * 100 : 0,
   );
 
-  const handleSeek = (e?: React.MouseEvent<HTMLDivElement>, moveTimeline?: number) => {
-    if(e) {
-      const bar = e.currentTarget;
-      if (!bar) return;
-  
-      const rect = bar.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const percent = Math.min(Math.max(clickX / rect.width, 0), 1);
-      song.seek(percent * songDuration);
-    } else {
-      if(moveTimeline) {
-        song.seek(moveTimeline);
-      }
-    }
+  const barRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [dragPercent, setDragPercent] = useState<number>(0);
+
+  const getPercent = (clientX: number) => {
+    const rect = barRef.current?.getBoundingClientRect();
+    if (!rect || !rect.width) return 0;
+    return Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1) * 100;
   };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
+    setDragPercent(getPercent(e.clientX));
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    setDragPercent(getPercent(e.clientX));
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    song.seek((getPercent(e.clientX) / 100) * songDuration);
+    setIsDragging(false);
+  };
+
+  const displayProgress = isDragging ? dragPercent : progress;
+  const displayTime = isDragging
+    ? (dragPercent / 100) * songDuration
+    : currentTimeStamp;
 
   useEffect(() => {
     const handleMusicControlsKey = (e: KeyboardEvent) => {
@@ -79,17 +95,27 @@ export default function MusicPlayer() {
           {playing ? <PauseIcon /> : <PlayIcon />}
         </Button>
       </div>
-      <div className="w-full gap-y-2 flex flex-col">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-muted-foreground">{formatClock(currentTimeStamp)}</p>
-          <p className="text-xs font-medium text-muted-foreground">{formatClock(songDuration)}</p>
-        </div>
-        <div>
+      <div className="w-full gap-y-0.5 flex flex-col">
+        <div
+          ref={barRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={() => setIsDragging(false)}
+          className="relative py-1.5 mt-4 cursor-pointer touch-none"
+        >
           <Progress
-            onClick={handleSeek}
-            value={progress}
+            value={displayProgress}
             className="hover:scale-y-150 duration-150 *:data-[slot=progress-track]:bg-zinc-200"
           />
+          <div
+            className="absolute top-1/2 h-3 w-1 bg-primary -translate-x-1/2 -translate-y-1/2 rounded-sm shadow pointer-events-none"
+            style={{ left: `${displayProgress}%` }}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-medium text-muted-foreground">{formatClock(displayTime)}</p>
+          <p className="text-xs font-medium text-muted-foreground">{formatClock(songDuration)}</p>
         </div>
       </div>
       <div className="flex items-center gap-x-1">

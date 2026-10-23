@@ -49,7 +49,7 @@ useSEO({
     "sync lyrics to music online",
     "karaoke subtitle maker",
   ].join(", "),
-  url: "https://lrc-gen.alien501.in/menu",
+  url: "https://lrc-gen.alien501.in/",
 });
 
   return (
