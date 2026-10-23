@@ -8,6 +8,7 @@ import {
   ArrowDown01Icon,
   ArrowUp01Icon,
   CopyPlusIcon,
+  ListRestartIcon,
   MusicNote03Icon,
   PencilEdit01Icon,
   Queue02Icon,
@@ -90,59 +91,76 @@ export function WordByWordControl() {
 
   const first = (v: number | readonly number[]) => (typeof v === "number" ? v : v[0]);
 
+  const resetThisLineSync = () => {
+    if(length > 0) {
+      const startTime = words[0].time;
+      if(startTime != null) song.seek(startTime);
+    }
+    // Reset line sync
+    lyrics.resetWordByWord();
+    // Seek song back
+  }
+
   return (
     <SyncControls
       control={
-        <div className="relative w-[460px] max-w-[calc(100vw-2rem)]">
+        <div className="relative sm:w-115 w-[320px] max-w-[calc(100vw-2rem)]">
           {/* Word start markers, behind the slider */}
           <div className="absolute inset-y-0 left-5 right-5 pointer-events-none">
             {spans.map((span, i) => (
               <div
                 key={i}
-                className="absolute top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/40"
+                className="absolute top-4 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/40"
                 style={{ left: `${(span.start / max) * 100}%` }}
               />
             ))}
           </div>
 
-          <Slider
-            value={[tracker]}
-            min={0}
-            max={max}
-            step={0.01}
-            disabled={!words}
-            onValueChange={(v) => lyrics.track(first(v), song.currentTime)}
-            onValueCommitted={lyrics.finishTrack}
-            className={cn(
-              "relative",
-              "[&_[data-slot=slider-track]]:h-12",
-              "[&_[data-slot=slider-track]]:rounded-full",
-              "[&_[data-slot=slider-track]]:bg-black/10",
-              "[&_[data-slot=slider-range]]:rounded-full",
-              "[&_[data-slot=slider-range]]:bg-black/20",
-              "[&_[data-slot=slider-thumb]]:h-10",
-              "[&_[data-slot=slider-thumb]]:w-10",
-              "[&_[data-slot=slider-thumb]]:rounded-full",
-              "[&_[data-slot=slider-thumb]]:border-0",
-              "[&_[data-slot=slider-thumb]]:bg-black",
-              "[&_[data-slot=slider-thumb]]:shadow-lg",
-              "[&_[data-slot=slider-thumb]]:hover:shadow-xl",
-              "[&_[data-slot=slider-thumb]]:cursor-grab",
-              "[&_[data-slot=slider-thumb]]:active:cursor-grabbing",
-              // hamburger glyph painted with a ::before + box-shadow trick
-              "[&_[data-slot=slider-thumb]]:before:content-['']",
-              "[&_[data-slot=slider-thumb]]:before:absolute",
-              "[&_[data-slot=slider-thumb]]:before:left-1/2",
-              "[&_[data-slot=slider-thumb]]:before:top-1/2",
-              "[&_[data-slot=slider-thumb]]:before:h-0.5",
-              "[&_[data-slot=slider-thumb]]:before:w-4",
-              "[&_[data-slot=slider-thumb]]:before:-translate-x-1/2",
-              "[&_[data-slot=slider-thumb]]:before:-translate-y-1/2",
-              "[&_[data-slot=slider-thumb]]:before:rounded-full",
-              "[&_[data-slot=slider-thumb]]:before:bg-white",
-              "[&_[data-slot=slider-thumb]]:before:shadow-[0_-6px_0_0_white,0_6px_0_0_white]",
-            )}
-          />
+          <div className="flex items-center justify-between space-x-1.5">
+            <Slider
+              value={[tracker]}
+              min={0}
+              max={max}
+              step={0.01}
+              disabled={!words}
+              onValueChange={(v) => lyrics.track(first(v), song.currentTime)}
+              onValueCommitted={lyrics.finishTrack}
+              className={cn(
+                "relative",
+                "[&_[data-slot=slider-track]]:h-6",
+                "[&_[data-slot=slider-track]]:rounded-full",
+                "[&_[data-slot=slider-track]]:bg-black/10",
+                "[&_[data-slot=slider-range]]:rounded-full",
+                "[&_[data-slot=slider-range]]:bg-black/20",
+                "[&_[data-slot=slider-thumb]]:h-8",
+                "[&_[data-slot=slider-thumb]]:w-8",
+                "[&_[data-slot=slider-thumb]]:rounded-full",
+                "[&_[data-slot=slider-thumb]]:border-0",
+                "[&_[data-slot=slider-thumb]]:bg-black",
+                "[&_[data-slot=slider-thumb]]:shadow-lg",
+                "[&_[data-slot=slider-thumb]]:hover:shadow-xl",
+                "[&_[data-slot=slider-thumb]]:cursor-grab",
+                "[&_[data-slot=slider-thumb]]:active:cursor-grabbing",
+                // hamburger glyph painted with a ::before + box-shadow trick
+                "[&_[data-slot=slider-thumb]]:before:content-['']",
+                "[&_[data-slot=slider-thumb]]:before:absolute",
+                "[&_[data-slot=slider-thumb]]:before:left-1/2",
+                "[&_[data-slot=slider-thumb]]:before:top-1/2",
+                "[&_[data-slot=slider-thumb]]:before:h-0.5",
+                "[&_[data-slot=slider-thumb]]:before:w-4",
+                "[&_[data-slot=slider-thumb]]:before:-translate-x-1/2",
+                "[&_[data-slot=slider-thumb]]:before:-translate-y-1/2",
+                "[&_[data-slot=slider-thumb]]:before:rounded-full",
+                "[&_[data-slot=slider-thumb]]:before:bg-white",
+                "[&_[data-slot=slider-thumb]]:before:shadow-[0_-6px_0_0_white,0_6px_0_0_white]",
+              )}
+            />
+            <Button className="rounded-sm size-8" onClick={resetThisLineSync}>
+              <HugeiconsIcon
+                icon={ListRestartIcon}
+              />
+            </Button>
+          </div>
         </div>
       }
     />

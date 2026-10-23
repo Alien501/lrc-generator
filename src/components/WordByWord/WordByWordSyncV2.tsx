@@ -47,7 +47,6 @@ function WordByWordLyricContainer() {
         }
         lyrics.goToLine(activeLine + number);
     }
-    console.log(lines[activeLine])
 
     return(
         <div className="relative h-full flex items-center justify-center">

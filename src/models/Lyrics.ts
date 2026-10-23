@@ -121,6 +121,21 @@ export class Lyrics extends Model<LyricsState> {
     this.setState({ tracker: pos });
   };
 
+  resetWordByWord = () => {
+    const { activeLine, lines } = this.state;
+    const words = lines[activeLine]?.words ?? [];
+
+    const hasTimestamps = words.some((w) => w.time != null || w.end != null);
+    if (!hasTimestamps) return;
+
+    this.updateLine(activeLine, (line) => ({
+      ...line,
+      words: line.words.map((word) => ({ ...word, time: null, end: null })),
+    }));
+
+    this.setState({ tracker: 0 });
+  };
+
   // Called when the tracker is released: advances once the whole line has been slid through.
   finishTrack = () => {
     const { activeLine, lines } = this.state;
