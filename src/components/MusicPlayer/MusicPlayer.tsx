@@ -10,6 +10,8 @@ import {
   GoForward5SecIcon,
 } from "@hugeicons/core-free-icons";
 import { useEffect } from "react";
+import { ButtonGroup } from "../ui/button-group";
+import { Toggle } from "../ui/toggle";
 
 export default function MusicPlayer() {
   // TODO: Track Numlock status
@@ -91,12 +93,23 @@ export default function MusicPlayer() {
         </div>
       </div>
       <div className="flex items-center gap-x-1">
-        <Button onClick={() => song.seek(Math.max(currentTimeStamp - 5, 0))} variant="secondary" className="rounded-full size-8">
-          <HugeiconsIcon icon={GoBackward5SecIcon} />
-        </Button>
-        <Button onClick={() => song.seek(Math.min(songDuration, currentTimeStamp + 5))} variant="secondary" className="rounded-full size-8">
-          <HugeiconsIcon icon={GoForward5SecIcon} />
-        </Button>
+        <ButtonGroup>
+          <Button onClick={() => song.seek(Math.max(currentTimeStamp - 5, 0))} variant="secondary" className="size-8">
+            <HugeiconsIcon icon={GoBackward5SecIcon} />
+          </Button>
+          <Button onClick={() => song.seek(Math.min(songDuration, currentTimeStamp + 5))} variant="secondary" className="rounded- size-8">
+            <HugeiconsIcon icon={GoForward5SecIcon} />
+          </Button>
+        </ButtonGroup>
+        <Toggle variant="default" onPressedChange={(e) => {
+          if(e) {
+            song.setPlaybackRate(0.5);
+          } else {
+            song.setPlaybackRate(1);
+          }
+        }}>
+          <p className="font-medium text-xs">0.5x</p>
+        </Toggle>
       </div>
     </div>
   );

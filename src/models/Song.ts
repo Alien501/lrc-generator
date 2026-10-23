@@ -6,6 +6,7 @@ interface SongState {
     playing: boolean;
     position: number;
     duration: number;
+    playbackRate: number;
 }
 
 const initialState: SongState = {
@@ -13,6 +14,7 @@ const initialState: SongState = {
     playing: false,
     position: 0,
     duration: 0,
+    playbackRate: 1
 };
 
 export class Song extends Model<SongState> {
@@ -66,6 +68,7 @@ export class Song extends Model<SongState> {
 
     play = () => {
         if (!this.howl || this.state.playing) return;
+        this.howl.rate(this.state.playbackRate);
         this.howl.play();
         this.setState({ playing: true });
         this.tick();
@@ -86,6 +89,16 @@ export class Song extends Model<SongState> {
         this.howl.seek(clamped);
         this.setState({ position: clamped });
     };
+
+    setPlaybackRate = (rate: number) => {
+        if(!this.howl) return;
+        this.setState({ playbackRate: rate });
+        if(this.state.playing){
+            // Easy work-around
+            this.toggle();
+            this.play();
+        };
+    }
 
     skip = (delta: number) => this.seek(this.currentTime + delta);
 
