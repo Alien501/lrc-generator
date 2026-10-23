@@ -25,7 +25,7 @@ export default function TopBarV2() {
                 Back
               </Button>
             </div>
-            <div className="max-w-[320px]">
+            <div className="w-40 sm:w-[80%] text-center">
               <p className="text-sm animate-marquee font-medium mask-[linear-gradient(to_right,transparent,black_15%,black_85%,transparent)] text-nowrap">
                 {songName}
               </p>
