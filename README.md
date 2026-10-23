@@ -17,7 +17,13 @@
 
 ## Preview
 
-![Screenshot of LRC Generator](/screenshot/image.png)
+| Feature | Screenshot |
+| ---------------- | ---------------- |
+| Main Menu        | ![Main Menu](/screenshot/menu.png) |
+| Line-By-Line Sync      | ![Line-By-Line Sync](/screenshot/lbl.png) |
+| Word-By-Word Sync | ![Word-By-Word Sync](/screenshot/wbw.png) |
+
+<!-- ![Screenshot of LRC Generator](/screenshot/image.png) -->
 
 ## Getting Started
 
