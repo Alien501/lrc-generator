@@ -17,10 +17,17 @@ export function MainPage() {
   const hasSong = song.use((s) => s.file !== null);
   const hasLyrics = lyrics.use((l) => l.text.trim().length > 0 );
   const router = useNavigate();
+  const uploadedFile = lyrics.use((l) => l.uploadedFile);
+  const detectedMode = lyrics.use((l) => l.mode);
 
   const onSongSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) song.load(file);
+  };
+
+  const onLRCUploaded = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) lyrics.load(file);
   };
 
 useSEO({
@@ -51,6 +58,7 @@ useSEO({
   ].join(", "),
   url: "https://lrc-gen.alien501.in/",
 });
+// Note: If uploadedFile -> !null -> File is present
 
   return (
     <div className="h-dvh relative overflow-hidden flex justify-center items-center flex-col gap-y-4 bg-zinc-100 max-h-[90%]">
@@ -83,10 +91,13 @@ useSEO({
           />
           <Separator />
           <OptionMenu
-            disabled
+            disabled={!hasSong}
+            inputType="file"
+            fileType=".lrc"
             id="upload-lrc"
-            label="Sync Lyrics?"
-            ctaText="Upload LRC"
+            label={uploadedFile? "Wrong one?": "Sync Lyrics?"}
+            ctaText={"Upload LRC"}
+            onClick={onLRCUploaded}
           />
         </div>
       </div>
@@ -98,7 +109,15 @@ useSEO({
       {
         <Card className={`rounded-sm bg-white border border-zinc-200 shadow-xs p-2 absolute z-10 left-1/2 -translate-1/2 ease-in-out duration-300 ${hasLyrics ? 'bottom-[-20px]': '-bottom-40'}`}>
           <CardContent>
-            <p className="text-sm font-medium text-center mb-2 text-muted-foreground">Start Syncing</p>
+            <p className="text-sm font-medium text-center mb-2 text-muted-foreground">
+              <span>Start Syncing</span>
+              {
+                (uploadedFile && detectedMode) ?
+                  <span className="text-xs font-semibold text-green-700"> - Detected: {detectedMode == "line"? "Line-By-Line": "Word-By-Word"}</span>
+                :
+                <></>
+              }
+            </p>
             <ButtonGroup>
               <Button onClick={() => router('/line')} className="py-4 px-8 rounded-sm">
                 Line-By-Line

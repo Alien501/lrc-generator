@@ -8,8 +8,13 @@ import { copyToClipboard, readFromClipboard } from "@/lib/utils";
 export default function LyricInput() {
     const searchForLyricsOnline = () => song.searchForLyricsOnline();
     const lyricsText = lyrics.use((s) => s.text);
+    const uploadedFile = lyrics.use((l) => l.uploadedFile);
 
     const pasteFromClipboard = async () => {
+        if(uploadedFile) {
+            // Pasting From Clipboard - Override file Content
+            lyrics.unload();
+        }
         const content = await readFromClipboard();
         onLyricsChange(content);
     }
@@ -27,7 +32,7 @@ export default function LyricInput() {
                     <Button disabled={disableButtons} onClick={() => copyToClipboard(lyricsText)} className="text-xs font-medium rounded-sm" variant="secondary">
                         Copy
                     </Button>
-                    <Button disabled={disableButtons} onClick={() => onLyricsChange('')} className="text-xs font-medium rounded-sm" variant="destructive">
+                    <Button disabled={disableButtons} onClick={() => {if(uploadedFile) lyrics.unload(); onLyricsChange('')}} className="text-xs font-medium rounded-sm" variant="destructive">
                         Clear
                     </Button>
                 </ButtonGroup>

@@ -59,10 +59,19 @@ export default function LyricsCardV2({ text, time = null, isActive, index }: Lyr
     }
   };
 
+  const onCardClicked = () => {
+    if(time) {
+      // Just a workaround - Enough for now ig
+      lyrics.adjustLine(index, 0);
+      song.seek(time);
+    };
+  }
+
   return (
     <div
+      onClick={onCardClicked}
       ref={cardRef}
-      className={`min-h-15 flex items-center justify-between px-2 py-4 bg-white border-2 rounded-sm duration-300 ease-in-out ${isActive ? " border-zinc-400" : "border-zinc-50"} hover:bg-zinc-100`}
+      className={`hover:cursor-pointer min-h-15 flex items-center justify-between px-2 py-4 bg-white border-2 rounded-sm duration-300 ease-in-out ${isActive ? " border-zinc-400" : "border-zinc-50"} hover:bg-zinc-100`}
     >
       <div>
         <p className="text-sm font-semibold">{text}</p>

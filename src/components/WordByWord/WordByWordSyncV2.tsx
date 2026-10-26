@@ -10,6 +10,8 @@ import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons";
 import { WordByWordControl } from "../SyncControls/SyncControls";
 import { useNavigate } from "react-router-dom";
 
+// TODO - Position Tracker in position when the sync is already present: DUCk
+
 export default function WordByWordSyncV2() {
     useEffect(() => lyrics.setMode("word"), []);
 
@@ -86,12 +88,17 @@ function TrackedLine({ line, tracker }: { line: Line; tracker: number }) {
             {line.words.map((word, i) => {
                 const { start, end } = spans[i];
                 const fill =
-                    word.end !== null ? 100
-                    : word.time !== null ? Math.min(Math.max((tracker - start) / Math.max(end - start, 1), 0), 1) * 100
-                    : 0;
+                word.end !== null ? 100
+                : word.time !== null ? Math.min(Math.max((tracker - start) / Math.max(end - start, 1), 0), 1) * 100
+                : 0;
+                const onWordClicked = () => {
+                    if(word.time != null) {
+                        song.seek(word.time);
+                    }
+                }
 
                 return (
-                    <span key={i} className="relative">
+                    <span onClick={onWordClicked} key={i} className="relative hover:cursor-pointer hover:bg-zinc-200">
                         <span
                             className="bg-clip-text text-transparent relative z-1 leading-relaxed"
                             style={{ backgroundImage: `linear-gradient(to right, var(--foreground) ${fill}%, var(--muted-foreground) ${fill}%)` }}

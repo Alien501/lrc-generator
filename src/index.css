@@ -10,6 +10,11 @@
   src: url('./assets/fonts/satoshi.ttf');
 }
 
+* {
+   -webkit-user-select: none;
+  user-select: none;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
