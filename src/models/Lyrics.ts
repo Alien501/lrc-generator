@@ -285,6 +285,31 @@ export class Lyrics extends Model<LyricsState> {
     this.setState({ activeLine: activeLine - 1 });
   };
 
+  getLineSiblings = (index: number): { prev: Line | null; next: Line | null } | null => {
+    const { lines } = this.state;
+    if (lines.length === 0) return null;
+    if (index < 0 || index > lines.length - 1) return null;
+
+    const isReal = (l: Line | undefined): Line | null =>
+      l && l.text !== "" ? l : null;
+
+    return {
+      prev: isReal(lines[index - 1]),
+      next: isReal(lines[index + 1]),
+    };
+  };
+
+  getIndexBasedOnDuration = (position: number): number => {
+    const { lines } = this.state;
+    let idx = -1;
+    for (let i = 0; i < lines.length; i++) {
+      const t = lines[i].time;
+      if (t == null) continue;
+      if (t <= position) idx = i;
+      else break;
+    }
+    return idx; 
+  };
   // --- Word-by-word ---
 
   // Moves the tracker to `pos`: words it enters get a start, words it leaves get an end.
