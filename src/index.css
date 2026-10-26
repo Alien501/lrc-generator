@@ -86,6 +86,42 @@
 
 @theme {
   --font-display: "Satoshi", "sans-serif";
+
+  --animate-fade-in-up: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-from-bottom-to-bottom: fromBottomBottomToBottom .2s ease-in forwards;
+  --animate-from-top-to-top: fade-to-top .4s ease-out backwards;
+
+  @keyframes fade-in-up {
+    0% {
+      scale: .5;
+      transform: translate3d(0, 40px, 0);
+    }
+    100% {
+      scale: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes fade-to-top {
+    0% {
+      scale: 1.5;
+      transform: translate3d(0, 40px, 0);
+    }
+    100% {
+      scale: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes fromBottomBottomToBottom {
+    0% {
+      scale: 0.5;
+      transform: translate3d(0, 40px, 0);
+    } 100% {
+      scale: 1;
+      transform: translate3d(0, 0px, 0);
+    }
+  }
 }
 
 button:hover {
