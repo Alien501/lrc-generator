@@ -1,5 +1,5 @@
-import { lyrics, song, wordSpans } from "@/models";
-import { useEffect } from "react";
+import { lyrics, song, Word, wordSpans } from "@/models";
+import { useEffect, useMemo } from "react";
 import { Card, CardContent } from "../ui/card";
 import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 import { Button } from "../ui/button";
@@ -225,7 +225,7 @@ function LyricUtils() {
         </Button>
       </ButtonGroup>
       <ButtonGroup>
-        <LineByLineLyricsPreview />
+        <LyricsPreview />
       </ButtonGroup>
     </div>
   );
@@ -233,11 +233,114 @@ function LyricUtils() {
 
 // TODO: Extract stuff from here to clean the code once completed fully
 function LineByLineLyricsPreview() {
-  const syncedLyrics = lyrics.use((l) => l.lines);
-  const songName = song.baseName;
+  const syncedLyrics = lyrics.use((l) => l.lines); // Do I need this? - Let it be for now: TODO
   const musicPlayerCurrentTime = song.use((s) => s.position);
   const currentLineIndex = lyrics.getIndexBasedOnDuration(musicPlayerCurrentTime);
   const lineSibiling = lyrics.getLineSiblings(currentLineIndex);
+
+  return(
+    <div className="flex-1 p-4 sm:w-[80%] w-[95%] mx-auto">
+      <div className="rounded-sm flex flex-col items-center justify-center gap-y-2">
+        <div className="px-0.5 py-1 flex-row items-center justify-start perspective-distant transform-3d w-full overflow-hidden">
+          <p key={currentLineIndex - 1} className="font-medium text-zinc-500 text-xl animate-from-top-to-top origin-bottom-left">{(lineSibiling && lineSibiling.prev) ? lineSibiling.prev.text:""}</p>
+        </div>
+        <div className="px-1 py-2 flex-row items-center justify-start w-full perspective-distant transform-3d overflow-hidden">
+          <p key={currentLineIndex} className="text-900 font-semibold text-2xl origin-bottom-left animate-fade-in-up">{syncedLyrics[currentLineIndex]?.text}</p>
+        </div>
+        <div className="px-0.5 py-1 flex-row items-center justify-start w-full perspective-distant transform-3d overflow-hidden">
+          <p key={currentLineIndex + 1} className="font-medium text-zinc-500 text-xl animate-from-bottom-to-bottom origin-bottom-left">{(lineSibiling && lineSibiling.next) ? lineSibiling.next.text:""}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+const DEFAULT_WORD_DURATION = 0.3;
+const MIN_WORD_DURATION = 0.05;
+const EMPTY_WORDS: Word[] = [];
+
+interface Timing { start: number; end: number }
+
+const resolveTimings = (words: Word[], lineStart: number): Timing[] => {
+  const out: Timing[] = [];
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i];
+    const start = w.time ?? out[i - 1]?.end ?? lineStart;
+
+    let end = w.end;
+    if (end == null) {
+      const nextTimed = words.slice(i + 1).find((x) => x.time != null);
+      end = nextTimed?.time ?? start + DEFAULT_WORD_DURATION;
+    }
+    out.push({ start, end: Math.max(end, start + MIN_WORD_DURATION) });
+  }
+  return out;
+};
+
+function WordByWordLyricsPreview() {
+  const syncedLyrics = lyrics.use((l) => l.lines);
+  const position = song.use((s) => s.position); // seconds
+  const currentLineIndex = lyrics.getIndexBasedOnDuration(position, true);
+  const lineSibling = lyrics.getLineSiblings(currentLineIndex);
+  const currentLine = syncedLyrics[currentLineIndex];
+
+  const words = currentLine?.words ?? EMPTY_WORDS;
+
+  const timings = useMemo(() => {
+    if (!currentLine) return [];
+    const lineStart =
+      currentLine.time ??
+      currentLine.words.find((w) => w.time != null)?.time ??
+      0;
+    return resolveTimings(currentLine.words, lineStart);
+  }, [currentLine]);
+
+  return (
+    <div className="flex-1 p-4 sm:w-[80%] w-[95%] mx-auto">
+      <div className="rounded-sm flex flex-col items-center justify-center gap-y-2">
+        <div className="px-0.5 py-1 w-full overflow-hidden">
+          <p key={currentLineIndex - 1} className="font-medium text-zinc-500 text-xl animate-from-top-to-top origin-bottom-left">
+            {lineSibling?.prev?.text ?? ""}
+          </p>
+        </div>
+
+        <div className="px-1 py-2 w-full overflow-hidden">
+          <p key={currentLineIndex} className="text-foreground font-semibold text-2xl origin-bottom-left animate-fade-in-up">
+            {words.map((word, i) => {
+              const t = timings[i];
+              const fill = t
+                ? Math.min(Math.max((position - t.start) / (t.end - t.start), 0), 1) * 100
+                : 0;
+
+              return (
+                <span key={i} className="relative">
+                  <span
+                    className="bg-clip-text text-transparent leading-relaxed"
+                    style={{
+                      backgroundImage: `linear-gradient(to right, var(--foreground) ${fill}%, var(--muted-foreground) ${fill}%)`,
+                    }}
+                  >
+                    {word.text}
+                  </span>{" "}
+                </span>
+              );
+            })}
+          </p>
+        </div>
+
+        <div className="px-0.5 py-1 w-full overflow-hidden">
+          <p key={currentLineIndex + 1} className="font-medium text-zinc-500 text-xl animate-from-bottom-to-bottom origin-bottom-left">
+            {lineSibling?.next?.text ?? ""}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function LyricsPreview() {
+  const songName = song.baseName;
+  const mode = lyrics.use((l) => l.mode);
 
   return(
     <Drawer showSwipeHandle>
@@ -260,17 +363,12 @@ function LineByLineLyricsPreview() {
           </DrawerDescription>
         </DrawerHeader>
         <div className="flex-1 p-4 sm:w-[80%] w-[95%] mx-auto">
-          <div className="rounded-sm flex flex-col items-center justify-center gap-y-2">
-            <div className="px-0.5 py-1 flex-row items-center justify-start perspective-distant transform-3d w-full overflow-hidden">
-              <p key={currentLineIndex - 1} className="font-medium text-zinc-500 text-xl animate-from-top-to-top origin-bottom-left">{(lineSibiling && lineSibiling.prev) ? lineSibiling.prev.text:""}</p>
-            </div>
-            <div className="px-1 py-2 flex-row items-center justify-start w-full perspective-distant transform-3d overflow-hidden">
-              <p key={currentLineIndex} className="text-900 font-semibold text-2xl origin-bottom-left animate-fade-in-up">{syncedLyrics[currentLineIndex]?.text}</p>
-            </div>
-            <div className="px-0.5 py-1 flex-row items-center justify-start w-full perspective-distant transform-3d overflow-hidden">
-              <p key={currentLineIndex + 1} className="font-medium text-zinc-500 text-xl animate-from-bottom-to-bottom origin-bottom-left">{(lineSibiling && lineSibiling.next) ? lineSibiling.next.text:""}</p>
-            </div>
-          </div>
+          {
+            mode == "line" ?
+            <LineByLineLyricsPreview />
+            :
+            <WordByWordLyricsPreview />
+          }
         </div>
         <DrawerFooter className="flex items-center justify-center">
           <MusicPlayer />

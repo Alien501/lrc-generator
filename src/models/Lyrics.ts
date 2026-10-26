@@ -299,16 +299,34 @@ export class Lyrics extends Model<LyricsState> {
     };
   };
 
-  getIndexBasedOnDuration = (position: number): number => {
+  // getIndexBasedOnDuration = (position: number): number => {
+  //   const { lines } = this.state;
+  //   let idx = -1;
+  //   for (let i = 0; i < lines.length; i++) {
+  //     const t = lines[i].time;
+  //     if (t == null) continue;
+  //     if (t <= position) idx = i;
+  //     else break;
+  //   }
+  //   return idx; 
+  // };
+    getIndexBasedOnDuration = (position: number, isWordByWord: boolean = false): number => {
     const { lines } = this.state;
     let idx = -1;
     for (let i = 0; i < lines.length; i++) {
-      const t = lines[i].time;
+      const line = lines[i];
+
+      let t = line.time;
+      if (t == null && isWordByWord) {
+        const firstTimedWord = line.words?.find((w) => w.time != null);
+        t = firstTimedWord?.time ?? null;
+      }
+
       if (t == null) continue;
       if (t <= position) idx = i;
       else break;
     }
-    return idx; 
+    return idx;
   };
   // --- Word-by-word ---
 

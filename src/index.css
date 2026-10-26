@@ -94,32 +94,32 @@
   @keyframes fade-in-up {
     0% {
       scale: .5;
-      transform: translateY(40px);
+      transform: translate3d(0, 40px, 0);
     }
     100% {
       scale: 1;
-      transform: translateY(0);
+      transform: translate3d(0, 0, 0);
     }
   }
 
   @keyframes fade-to-top {
     0% {
       scale: 1.5;
-      transform: translateY(40px);
+      transform: translate3d(0, 40px, 0);
     }
     100% {
       scale: 1;
-      transform: translateY(0);
+      transform: translate3d(0, 0, 0);
     }
   }
 
   @keyframes fromBottomBottomToBottom {
     0% {
       scale: 0.5;
-      transform: translateY(40px);
+      transform: translate3d(0, 40px, 0);
     } 100% {
       scale: 1;
-      transform: translateY(0px);
+      transform: translate3d(0, 0px, 0);
     }
   }
 }
