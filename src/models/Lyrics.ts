@@ -240,6 +240,28 @@ export class Lyrics extends Model<LyricsState> {
     });
   };
 
+  onPasted = (content: string): boolean => {
+    const { lines, mode } = parseLrc(content);
+    // If this passess -> Lyrics is synced
+    if(lines.some((l) => l.time !== null)) {
+      const body =
+          lines.length > 0 && lines[lines.length - 1].text === ""
+            ? lines.slice(0, -1)
+            : lines;
+      this.setState({
+          text: body.map((l) => l.text).join("\n"),
+          lines,
+          mode,
+          uploadedFile: true, // Treat as file for now :-)
+          activeLine: startLine(mode),
+          tracker: 0,
+      });
+
+      return true;
+    }
+    return false;
+  }
+
   unload = () => {
     this.setState({
       text: "",

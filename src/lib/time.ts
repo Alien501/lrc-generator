@@ -5,8 +5,9 @@ export const formatClock = (time: number) => `${Math.floor(time / 60)}:${pad(Mat
 
 // LRC timestamp, kept identical to the previous output format.
 export const formatLrcTime = (time: number) => {
-    const min = Math.floor(time / 60);
-    const sec = Math.floor(time % 60);
-    const msec = Math.floor((time % 1) * 100);
-    return `${pad(min)}:${pad(sec)}.${pad(msec, 3)}`;
+  const totalMs = Math.round(time * 1000);
+  const min = Math.floor(totalMs / 60_000);
+  const sec = Math.floor(totalMs / 1000) % 60;
+  const msec = totalMs % 1000;
+  return `${pad(min)}:${pad(sec)}.${pad(msec, 3)}`;
 };

@@ -10,14 +10,22 @@ export default function LyricInput() {
     const lyricsText = lyrics.use((s) => s.text);
     const uploadedFile = lyrics.use((l) => l.uploadedFile);
 
+
+    const applyPastedContent = (content: string) => {
+        if (uploadedFile) lyrics.unload();
+        const res = lyrics.onPasted(content);
+        if (!res) onLyricsChange(content);
+    };
+
     const pasteFromClipboard = async () => {
-        if(uploadedFile) {
-            // Pasting From Clipboard - Override file Content
-            lyrics.unload();
-        }
         const content = await readFromClipboard();
-        onLyricsChange(content);
-    }
+        applyPastedContent(content);
+    };
+
+    const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+        e.preventDefault();
+        applyPastedContent(e.clipboardData.getData("text/plain"));
+    };
 
     const onLyricsChange = (text: string) => lyrics.setText(text);
     const disableButtons = lyricsText.trim().length == 0;
@@ -44,6 +52,7 @@ export default function LyricInput() {
             </CardHeader>
             <CardContent>
                 <Textarea
+                    onPaste={handlePaste}
                     onChange={(e) => onLyricsChange(e.target.value)}
                     value={lyricsText}
                     className="rounded-sm h-78"
