@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft, ArrowRight } from "@hugeicons/core-free-icons";
 import { formatLrcTime } from "@/lib/time";
+import { Input } from "../ui/input";
 
 interface LyricsCardProps {
   text: string;
@@ -14,6 +15,7 @@ interface LyricsCardProps {
 }
 
 export default function LyricsCardV2({ text, time = null, isActive, index }: LyricsCardProps) {
+  const editCardIndex: number | null = lyrics.use((l) => l.editCardIndex);
   const songDuration = song.use((s) => s.duration);
   const cardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -24,6 +26,11 @@ export default function LyricsCardV2({ text, time = null, isActive, index }: Lyr
           block: "center",
         });
       });
+
+      // Reset Edit Card Index
+      if(editCardIndex != null) {
+        lyrics.setEditCardIndex(null);
+      }
     }
   }, [isActive]);
 
@@ -67,15 +74,31 @@ export default function LyricsCardV2({ text, time = null, isActive, index }: Lyr
     };
   }
 
+  const onLyricsEdited = (e: React.ChangeEvent<HTMLInputElement>) => {
+    lyrics.adjustLine(index, 0, e.target.value, true);
+  };
+
   return (
     <div
+      onDoubleClick={() => lyrics.setEditCardIndex(index)}
       onClick={onCardClicked}
       ref={cardRef}
       className={`hover:cursor-pointer min-h-15 flex items-center justify-between px-2 py-4 bg-white border-2 rounded-sm duration-300 ease-in-out ${isActive ? " border-zinc-400" : "border-zinc-50"} hover:bg-zinc-100`}
     >
-      <div>
-        <p className="text-sm font-semibold">{text}</p>
-      </div>
+      {
+        (editCardIndex != null && editCardIndex == index) ?
+        <Input
+          className="rounded-xs flex-1 min-w-0"
+          value={text}
+          onBlur={() => lyrics.setEditCardIndex(null)}
+          onChange={onLyricsEdited}
+          autoFocus
+        />
+        :
+        <div>
+          <p className="text-sm font-semibold">{text}</p>
+        </div>
+      }
       <div>
         {(time !== null || time == 0) ? (
           <ButtonGroup>

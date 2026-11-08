@@ -22,6 +22,8 @@ interface LyricsState {
   // Line mode starts at -1, meaning "before the first line".
   activeLine: number;
   tracker: number;
+  // Value to track edit card idx: Current Edit Card: idx | null
+  editCardIndex: number | null
 }
 
 const startLine = (mode: SyncMode) => (mode === "line" ? -1 : 0);
@@ -186,6 +188,7 @@ const initialState: LyricsState = {
   uploadedFile: false,
   activeLine: -1,
   tracker: 0,
+  editCardIndex: null
 };
 
 export class Lyrics extends Model<LyricsState> {
@@ -350,6 +353,13 @@ export class Lyrics extends Model<LyricsState> {
     }
     return idx;
   };
+
+  // set Edit Card index
+  setEditCardIndex = (idx: number | null) => {
+    this.setState({
+      editCardIndex: idx
+    })
+  }
   // --- Word-by-word ---
 
   // Moves the tracker to `pos`: words it enters get a start, words it leaves get an end.
@@ -396,7 +406,11 @@ export class Lyrics extends Model<LyricsState> {
     this.setState({ activeLine: activeLine + 1, tracker: 0 });
   };
 
-  adjustLine = (index: number, timeToAdjust: number) => {
+  adjustLine = (index: number, timeToAdjust: number, updatedLyrics?: string, updateLyrics?: boolean) => {
+    if(updateLyrics && updateLyrics) {
+      this.updateLine(index, (line) => ({...line, text: updatedLyrics || ""}));
+      return;
+    }
     this.updateLine(index, (line) =>
       line.time == null ? line : { ...line, time: line.time + timeToAdjust },
     );
