@@ -11,7 +11,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { useEffect, useRef, useState } from "react";
 import { ButtonGroup } from "../ui/button-group";
-import { Toggle } from "../ui/toggle";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export default function MusicPlayer() {
   // TODO: Track Numlock status
@@ -127,16 +127,34 @@ export default function MusicPlayer() {
             <HugeiconsIcon icon={GoForward5SecIcon} />
           </Button>
         </ButtonGroup>
-        <Toggle variant="default" onPressedChange={(e) => {
-          if(e) {
-            song.setPlaybackRate(0.5);
-          } else {
-            song.setPlaybackRate(1);
-          }
-        }}>
-          <p className="font-medium text-xs">0.5x</p>
-        </Toggle>
+        <PlaybackSpeedControl />
       </div>
     </div>
+  );
+}
+
+const PlaybackSpeedControl = () => {
+  const playbackRates = [0.25, 0.5, 1, 1.5, 2];
+  const playbackRate = song.use((s) => s.playbackRate);
+
+  return(
+    <DropdownMenu>
+      <DropdownMenuTrigger className="w-4">
+        <Button variant="ghost" className="text-xs" >{playbackRate}x</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="rounded-sm">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Playback Speed</DropdownMenuLabel>
+          <DropdownMenuRadioGroup
+            value={playbackRate}
+            onValueChange={(v: number) => song.setPlaybackRate(v || 1)}
+          >
+            {
+              playbackRates.map(a => <DropdownMenuRadioItem value={a}>{a}x</DropdownMenuRadioItem>)
+            }
+          </DropdownMenuRadioGroup>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
