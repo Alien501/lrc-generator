@@ -103,7 +103,8 @@ export default function LyricsCardV2({ text, time = null, isActive, index }: Lyr
         {(time !== null || time == 0) ? (
           <ButtonGroup>
             <Button
-              onClick={() => adjustLyricTimeStamp(-0.05)}
+              onClick={(e) => {e.stopPropagation(); adjustLyricTimeStamp(-0.05)}}
+              onDoubleClick={(e) => e.stopPropagation()}
               variant="secondary"
             >
               <HugeiconsIcon icon={ArrowLeft} />
@@ -112,7 +113,8 @@ export default function LyricsCardV2({ text, time = null, isActive, index }: Lyr
               <p>{formatLrcTime(time)}</p>
             </Button>
             <Button
-              onClick={() => adjustLyricTimeStamp(0.05)}
+              onClick={(e) => {e.stopPropagation(); adjustLyricTimeStamp(0.05)}}
+              onDoubleClick={(e) => e.stopPropagation()}
               variant="secondary"
             >
               <HugeiconsIcon icon={ArrowRight} />
