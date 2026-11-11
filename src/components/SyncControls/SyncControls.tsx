@@ -69,12 +69,13 @@ export function LineByLineControl() {
           <Button
             disabled={atStart}
             onClick={moveToPrevLine}
+            title="Move UP"
             className="px-14 py-6 rounded-sm"
           >
             <HugeiconsIcon className="size-6" icon={ArrowUp01Icon} />
           </Button>
           <ButtonGroupSeparator />
-          <Button onClick={moveToNextLine} className="px-14 py-6 rounded-sm">
+          <Button title="Move Down" onClick={moveToNextLine} className="px-14 py-6 rounded-sm">
             <HugeiconsIcon className="size-6" icon={ArrowDown01Icon} />
           </Button>
         </ButtonGroup>
@@ -193,7 +194,8 @@ function LyricUtils() {
       <ButtonGroup>
         <Button
           onClick={() => lyrics.upsertLine(activeLine, "♪", "insert")}
-          aria-label="Insert Instrumental Line Next"
+          aria-label="Insert instrumental line below"
+          title="Insert instrumental line below"
           variant="secondary"
         >
           +
@@ -201,7 +203,8 @@ function LyricUtils() {
         </Button>
         <Button
           onClick={() => lyrics.upsertLine(activeLine, "", "insert")}
-          aria-label="Insert Empty Line Next"
+          aria-label="Insert blank line below"
+          title="Insert blank line below"
           variant="secondary"
         >
           +
@@ -209,7 +212,8 @@ function LyricUtils() {
         </Button>
         <Button
           onClick={() => lyrics.upsertLine(activeLine, "", "duplicate")}
-          aria-label="Copy This to Next Line"
+          aria-label="Duplicate line below"
+          title="Duplicate line below"
           variant="secondary"
         >
           +
@@ -217,7 +221,8 @@ function LyricUtils() {
         </Button>
         <Button
           onClick={() => lyrics.upsertLine(activeLine, "", "remove")}
-          aria-label="Remove Next Line"
+          aria-label="Remove line below"
+          title="Remove line below"
           variant="secondary"
         >
           -
@@ -345,7 +350,7 @@ function LyricsPreview() {
   return(
     <Drawer showSwipeHandle>
       <DrawerTrigger
-        render={<Button variant="outline" />}
+        render={<Button variant="outline" title="Lyrics Preview" />}
       >
         <HugeiconsIcon
             icon={ChatPreview01Icon}

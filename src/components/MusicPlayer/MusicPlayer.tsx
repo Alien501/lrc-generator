@@ -91,6 +91,7 @@ export default function MusicPlayer() {
           onClick={song.toggle}
           variant="secondary"
           className="rounded-full size-8"
+          title={playing ? "Pause": "Play"}
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
         </Button>
@@ -120,10 +121,10 @@ export default function MusicPlayer() {
       </div>
       <div className="flex items-center gap-x-1">
         <ButtonGroup>
-          <Button onClick={() => song.seek(Math.max(currentTimeStamp - 5, 0))} variant="secondary" className="size-8">
+          <Button title="-5s" onClick={() => song.seek(Math.max(currentTimeStamp - 5, 0))} variant="secondary" className="size-8">
             <HugeiconsIcon icon={GoBackward5SecIcon} />
           </Button>
-          <Button onClick={() => song.seek(Math.min(songDuration, currentTimeStamp + 5))} variant="secondary" className="rounded- size-8">
+          <Button title="+5s" onClick={() => song.seek(Math.min(songDuration, currentTimeStamp + 5))} variant="secondary" className="rounded- size-8">
             <HugeiconsIcon icon={GoForward5SecIcon} />
           </Button>
         </ButtonGroup>
@@ -140,7 +141,7 @@ const PlaybackSpeedControl = () => {
   return(
     <DropdownMenu>
       <DropdownMenuTrigger className="w-4">
-        <Button variant="ghost" className="text-xs" >{playbackRate}x</Button>
+        <Button title="Playback Speed" variant="ghost" className="text-xs" >{playbackRate}x</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="rounded-sm">
         <DropdownMenuGroup>
